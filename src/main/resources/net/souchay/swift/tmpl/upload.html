@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="Generator" content="SwiftBrowser" />
+<title>Upload your files</title>
+<style type="text/css">
+.fileName,.fileSize,.fileType {
+	float: left;
+	margin-right: 1em;
+}
+
+#drop-area {
+	height: 50px;
+	text-align: center;
+	border: 2px dashed #ddd;
+	padding: 10px;
+	margin-bottom: 2em;
+}
+
+#drop-area .drop-instructions {
+	display: block;
+	height: 30px;
+}
+
+#drop-area .drop-over {
+	display: none;
+	font-size: 25px;
+	height: 30px;
+}
+
+#drop-area.over {
+	background: #ffffa2;
+	border: 2px dashed #000;
+}
+
+#drop-area.over .drop-instructions {
+	display: none;
+}
+
+#drop-area.over .drop-over {
+	display: block;
+}
+
+#drop-area.over .drop-over {
+	display: block;
+	font-size: 25px;
+}
+
+#file-list {
+	list-style: none;
+	margin-bottom: 3em;
+}
+
+#file-list li {
+	border-bottom: 1px solid #000;
+	margin-bottom: 0.5em;
+	padding-bottom: 0.5em;
+}
+
+#file-list li.no-items {
+	border-bottom: none;
+}
+
+#file-list div {
+	margin-bottom: 0.5em;
+}
+
+#file-list li img {
+	max-width: 400px;
+}
+
+#file-list .progress-bar-container {
+	width: 400px;
+	height: 10px;
+	border: 1px solid #555;
+	margin-bottom: .5em;
+}
+
+#file-list .progress-bar-container.uploaded {
+	height: auto;
+	border: none;
+}
+
+#file-list .progress-bar {
+	width: 0;
+	height: 10px;
+	font-weight: bold;
+	background: #6787e3;
+}
+
+#file-list .progress-bar-container.uploaded .progress-bar {
+	display: inline-block;
+	width: auto;
+	color: #6db508;
+	background: transparent;
+}
+
+#file-list .progress-bar-container.uploaded.failed .progress-bar {
+	color: red;
+}
+
+#file-list .progress-bar-container.uploaded {
+	margin-bottom: .1em;
+}
+</style>
+<script type="text/javascript">
+var translations = {
+	"fr": {
+		"title": "Transférez vos fichiers",
+		"invite": "Veuillez sélectionner les fichiers à transférer en utilisant le sélecteur de fichier...",
+		"dropInstructions": "Ou déposez directement les fichiers ici depuis votre explorateur de fichiers !",
+		"dropHere": "Déposer les fichiers ici !",
+		"noItemsDropped": "Pas de fichiers transférés pour l'instant.",
+		"Uploaded": "Transféré sur le serveur",
+		"passwordLabel": "Mot de passe : ",
+		"name:": "Nom :",
+		"size:": "Taille :",
+		"type:": "Type :",
+		" kb": "ko",
+		"maxFileSizeLabel": "Taille maximum autorisée en octets :",
+		"maxFileCountLabel": "Nombre maximum des fichiers :"
+	}
+	};
+	var loc;
+	function updateTranslations(){
+		var full = navigator.language;
+		loc = full.substring(0, 2);
+		var trans = translations[loc];
+		if (trans != null){
+			for (i in trans){
+				var node = document.getElementById(i);
+				if (node)
+					node.innerHTML = trans[i];
+			}
+			window.document.title = trans["title"];
+		}
+	}
+
+	function tr(defaultValue){
+		var trans = translations[loc];
+		if (trans == null)
+			return defaultValue;
+		var x = trans[defaultValue];
+		if (x)
+			return x;
+		return defaultValue;
+	}
+
+	</script>
+</head>
+<body onload="updateTranslations()">
+	<h1 id="title">File upload</h1>
+	<p id="invite">Please select files using the file picker.</p>
+	<form id="formFiles" action="___UPLOADPATH___" method="POST"
+		enctype="multipart/form-data">
+		<input type="hidden" name="redirect" value="" /> <input type="hidden"
+			name="max_file_size" value="___max_file_size___" /> <input
+			type="hidden" name="max_file_count" value="___max_file_count___" />
+		<input type="hidden" name="expires" value="___expires___" />
+		___signature_field___ <input id="files-upload" name="files-upload"
+			type="file" multiple="multiple" /> <input id="submitFiles"
+			type="submit" />
+	</form>
+	<p id="drop-area" style="display: none">
+		<span id="dropInstructions" class="drop-instructions">or drag
+			and drop files here</span> <span id="dropHere" class="drop-over">Drop
+			files here!</span>
+	</p>
+
+	<ul id="file-list" style="display: none">
+		<li id="noItemsDropped" class="no-items">(no files uploaded yet)</li>
+	</ul>
+	<table id="itemsDropped" style="display: none">
+		<thead>
+			<tr>
+				<th id="name">Name</th>
+				<th id="type">Type</th>
+				<th id="size">Size</th>
+				<th id="progress">Progress</th>
+		</thead>
+		<tbody id="tbody"></tbody>
+	</table>
+<script type="text/javascript">// <![CDATA[
+if (window.File && window.FileReader && window.FileList && window.FormData) {
+    var increment = 0;
+	document.getElementById("drop-area").style.display = "block";
+	document.getElementById("submitFiles").style.display = "none";
+	document.getElementById("file-list").style.display = "block";
+	(function() {
+		var filesUpload = document.getElementById("files-upload"), dropArea = document
+				.getElementById("drop-area"), fileList = document
+				.getElementById("file-list");
+
+		function uploadFile(file) {
+			var li = document.createElement("li"), div = document
+					.createElement("div"), img, progressBarContainer = document
+					.createElement("div"), progressBar = document
+					.createElement("div"), reader, xhr, fileInfo;
+
+			li.appendChild(div);
+			document.getElementById("noItemsDropped").style.display = "none";
+
+			progressBarContainer.className = "progress-bar-container";
+			progressBar.className = "progress-bar";
+			progressBarContainer.appendChild(progressBar);
+			li.appendChild(progressBarContainer);
+
+			/*
+			 * If the file is an image and the web browser supports FileReader,
+			 * present a preview in the file list
+			 */
+			var fileName = file.name;
+			// Default behaviour for Desktop
+			var applyToFileReader = function(xhr, oData, file, fileName) {
+				var oData = new FormData(document.getElementById("formFiles"));
+				oData.append("file1", file, fileName);
+				xhr.send(oData);
+				return file;
+			};
+			if (typeof FileReader !== "undefined" && (/image/i).test(file.type)) {
+				img = document.createElement("img");
+				li.appendChild(img);
+				reader = new FileReader();
+				reader.onload = (function(theImg) {
+					return function(evt) {
+						theImg.src = evt.target.result;
+					};
+				}(img));
+				reader.readAsDataURL(file);
+				if (file.name && file.name.match(/image\./i)) {
+					if (/(iPad|iPhone|iPod)/g.test(navigator.userAgent)) {
+						var d = new Date();
+						var name = d.getFullYear() + "-" + (d.getMonth() + 1)
+								+ "-" + d.getDate() + "_" + (d.getHours() + 1)
+								+ ":" + d.getMinutes() + "." + d.getSeconds()
+								+ "_" + (++increment) + "_" + file.name;
+						fileName = name;
+						applyToFileReader = function(xhr, oData, file, fileName) {
+							var boundary = '###########################';
+							boundary += Math.floor(Math.random() * 32768);
+							boundary += Math.floor(Math.random() * 32768);
+							boundary += Math.floor(Math.random() * 32768);
+							console.log("Boundary=" + boundary);
+							xhr
+									.setRequestHeader("Content-Type",
+											'multipart/form-data; boundary='
+													+ boundary);
+							var body = "";
+							function appendBoundary(body, boundary,
+									contentDisposition, data) {
+								body += '--' + boundary + '\r\n'
+										+ contentDisposition + '\r\n\r\n';
+								body += data;
+								return body;
+							}
+							var body;
+							// First, we copy all fields of existing
+							// form
+							var myForm = document.getElementById("formFiles");
+							var formElements = [ "redirect", "max_file_size",
+									"max_file_count", "expires", "signature" ];
+							for ( var i = 0; i < formElements.length; i++) {
+								var nm = formElements[i];
+								if (myForm[nm]) {
+									body = appendBoundary(body, boundary,
+											'Content-Disposition: form-data; name="'
+													+ nm + '"',
+											myForm[nm].value);
+									body += "\r\n";
+								}
+							}
+							var reader2 = new FileReader();
+							reader2.onload = (function(theImg) {
+								return function(evt) {
+									var after = "\r\n--" + boundary + "--";
+									var contentDisposition = 'Content-Disposition: form-data; name="files-upload"; filename="'
+											+ fileName
+											+ '"\r\nContent-Type: '
+											+ file.type;
+									var data = evt.target.result;
+									contentDisposition += "\r\nContent-Transfer-Encoding: base64"
+									var body2 = appendBoundary(body, boundary,
+											contentDisposition, data);
+									body2 += after;
+									function byteValue(x) {
+										return x.charCodeAt(0) & 0xff;
+									}
+									var ords = Array.prototype.map.call(body2,
+											byteValue);
+									var ui8a = new Uint8Array(ords);
+									xhr.send(ui8a.buffer);
+								};
+							}(img));
+							reader2.readAsBinaryString(file);
+							return file;
+						}
+					}
+				}
+			}
+
+			// Uploading - for Firefox, Google Chrome and Safari
+			xhr = new XMLHttpRequest();
+
+			// Update progress bar
+			xhr.upload.addEventListener("progress", function(evt) {
+				if (evt.lengthComputable) {
+					progressBar.style.width = (evt.loaded / evt.total) * 100
+							+ "%";
+				} else {
+					// No data to calculate on
+				}
+			}, false);
+
+			// File uploaded
+			xhr.addEventListener("load", function() {
+				var stat = (xhr.status < 400) ? " ok" : " failed";
+				progressBarContainer.className += " uploaded" + stat;
+				progressBar.innerHTML = tr("Uploaded") + " (" + xhr.status
+						+ " - " + xhr.statusText + ")";
+			}, false);
+
+			xhr.open("post", "___UPLOADPATH___", true);
+
+			var oData = new FormData(document.getElementById("formFiles"));
+
+			applyToFileReader(xhr, oData, file, fileName);
+
+			// Present file info and append it to the list of files
+			fileInfo = "<div class=\"fileName\"><strong>" + tr("name:")
+					+ "</strong> " + fileName + "</div>";
+			fileInfo += "<div class=\"fileSize\"><strong>" + tr("size:")
+					+ "</strong> " + parseInt(file.size / 1024, 10) + tr(" kb")
+					+ "</div>";
+			fileInfo += "<div class=\"fileType\"><strong>" + tr("type:")
+					+ "</strong> " + file.type + "</div>";
+			fileInfo += "<div>&nbsp;</div>";
+			div.innerHTML = fileInfo;
+
+			fileList.insertBefore(li, fileList.firstChild);
+		}
+
+		function traverseFiles(files) {
+			if (typeof files !== "undefined") {
+				for ( var i = 0, l = files.length; i < l; i++) {
+					uploadFile(files[i]);
+				}
+			} else {
+				fileList.innerHTML = "No support for the File API in this web browser";
+			}
+		}
+
+		filesUpload.addEventListener("change", function() {
+			traverseFiles(this.files);
+		}, false);
+
+		dropArea.addEventListener("dragleave", function(evt) {
+			var target = evt.target;
+
+			if (target && target === dropArea) {
+				this.className = "";
+			}
+			evt.preventDefault();
+			evt.stopPropagation();
+		}, false);
+
+		dropArea.addEventListener("dragenter", function(evt) {
+			this.className = "over";
+			evt.preventDefault();
+			evt.stopPropagation();
+		}, false);
+
+		dropArea.addEventListener("dragover", function(evt) {
+			evt.preventDefault();
+			evt.stopPropagation();
+		}, false);
+
+		dropArea.addEventListener("drop", function(evt) {
+			traverseFiles(evt.dataTransfer.files);
+			this.className = "";
+			evt.preventDefault();
+			evt.stopPropagation();
+		}, false);
+	})();
+} else {
+	// Old browser or no javascript
+}					
+//]]>
+</script>
+	<div class="footer">
+		<div>
+			<span id="maxFileSizeLabel">Maximum File Size:</span>&nbsp;___max_file_size___
+		</div>
+		<div>
+			<span id="maxFileCountLabel">Maximum Number of files:</span>&nbsp;___max_file_count___
+		</div>
+	</div>
+</body>
+</html>

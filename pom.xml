@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.souchay.swift</groupId>
+	<artifactId>swift-browser</artifactId>
+	<packaging>jar</packaging>
+	<version>20140707</version>
+	<name>Swift Browser</name>
+	<description>A OpenStack Swift Browser</description>
+	<properties>
+		<project.build.mainClass>net.souchay.swift.gui.SwiftMain</project.build.mainClass>
+		<proguard.exec.version>4.11</proguard.exec.version>
+		<swiftbrowser.exe.version>1.14.7.7</swiftbrowser.exe.version>
+	</properties>
+	<build>
+		<!-- PLUGINS - config is inherited from parent -->
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<inherited>true</inherited>
+				<configuration>
+					<debug>true</debug>
+					<debuglevel>none</debuglevel>
+					<!--source>1.7</source -->
+					<target>1.6</target>
+					<encoding>UTF-8</encoding>
+					<showDeprecation>true</showDeprecation>
+					<showWarnings>true</showWarnings>
+					<optimize>true</optimize>
+					<!-- workaround for http://jira.codehaus.org/browse/MCOMPILER-98 - <compilerArguments> 
+						<sourcepath>${project.basedir}/src/main/java</sourcepath> </compilerArguments> -->
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>native2ascii-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.6</version>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<!-- here the phase you need -->
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${basedir}</directory>
+									<includes>
+										<include>index.html</include>
+										<include>swift-browser.jnlp</include>
+									</includes>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>com.google.code.maven-replacer-plugin</groupId>
+				<artifactId>replacer</artifactId>
+				<version>1.5.0</version>
+				<executions>
+					<execution>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>replace</goal>
+						</goals>
+						<configuration>
+							<includes>
+								<include>target/**/*.html</include>
+								<include>target/**/currentversion.txt</include>
+								<include>target/swift-browser.jnlp</include>
+								<include>target/index.html</include>
+								<include>launch4j/swiftbrowser.app/Contents/Info.plist</include>
+							</includes>
+							<replacements>
+								<replacement>
+									<token>SWIFTVERSION</token>
+									<value>${project.version}</value>
+								</replacement>
+							</replacements>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>make-assembly</id> <!-- this is used for inheritance merges -->
+						<configuration>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+							<archive>
+								<manifest>
+									<mainClass>${project.build.mainClass}</mainClass>
+								</manifest>
+							</archive>
+						</configuration>
+						<phase>prepare-package</phase> <!-- append to the packaging phase. -->
+						<goals>
+							<goal>single</goal> <!-- goals == mojos -->
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.github.wvengen</groupId>
+				<artifactId>proguard-maven-plugin</artifactId>
+				<version>2.0.6</version>
+				<executions>
+					<execution>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>proguard</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<proguardVersion>${proguard.exec.version}</proguardVersion>
+					<injar>${project.build.finalName}-jar-with-dependencies.jar</injar>
+					<outjar>${project.build.finalName}-bin.jar</outjar>
+					<includeDependency>false</includeDependency>
+					<options>
+						<option>-target 1.6</option>
+						<option>-allowaccessmodification</option>
+						<option>-keep public class ${project.build.mainClass} {*;}
+						</option>
+						<option>-keepattributes RuntimeVisibleAnnotations</option>
+						<option>-keep class * extends javax.swing.plaf.ComponentUI {
+							public static javax.swing.plaf.ComponentUI
+							createUI(javax.swing.JComponent); }
+						</option>
+						<option>-keep class net.souchay.swift.gui.dnd.TenantDragAndDrop {*;}</option>
+						<option>-dontskipnonpubliclibraryclasses</option>
+						<option>-dontskipnonpubliclibraryclassmembers</option>
+						<option>-dontnote</option>
+					</options>
+					<inFilter>!META-INF/*.txt</inFilter>
+					<libs>
+						<lib>${java.home}/lib/rt.jar</lib>
+						<lib>${java.home}/lib/jsse.jar</lib>
+						<lib>${java.home}/lib/jce.jar</lib>
+					</libs>
+					<archive>
+						<manifest>
+							<mainClass>${project.build.mainClass}</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>net.sf.proguard</groupId>
+						<artifactId>proguard-base</artifactId>
+						<version>${proguard.exec.version}</version>
+						<scope>runtime</scope>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<!-- <plugin> <artifactId>maven-assembly-plugin</artifactId> <executions> 
+				<execution> <id>post-assembly</id> <configuration> <descriptors> <descriptor>assembly.xml</descriptor> 
+				</descriptors> </configuration> <phase>package</phase> <goals> <goal>single</goal> 
+				</goals> </execution> </executions> </plugin> -->
+			<plugin>
+				<groupId>org.bluestemsoftware.open.maven.plugin</groupId>
+				<artifactId>launch4j-plugin</artifactId>
+				<version>1.5.0.0</version>
+				<executions>
+					<!-- GUI exe -->
+					<execution>
+						<id>l4j-gui</id>
+						<phase>package</phase>
+						<goals>
+							<goal>launch4j</goal>
+						</goals>
+						<configuration>
+							<dontWrapJar>false</dontWrapJar>
+							<headerType>gui</headerType>
+							<jar>target/${project.build.finalName}-bin.jar</jar>
+							<outfile>target/SwiftBrowser.exe</outfile>
+							<errTitle>You need a valid Java Virtual Machine</errTitle>
+							<cmdLine />
+							<chdir />
+							<priority />
+							<downloadUrl>http://java.com/download</downloadUrl>
+							<supportUrl>http://souchay.net/swift-browser-support.html
+							</supportUrl>
+							<customProcName>true</customProcName>
+							<stayAlive>false</stayAlive>
+							<manifest></manifest>
+							<icon>launch4j/swift.ico</icon>
+							<jre>
+								<minVersion>1.6.0</minVersion>
+								<maxVersion />
+								<initialHeapSize>128</initialHeapSize>
+								<maxHeapSize>1024</maxHeapSize>
+								<!--opts> <opt>-server</opt> </opts -->
+							</jre>
+							<versionInfo>
+								<fileVersion>${swiftbrowser.exe.version}</fileVersion>
+								<txtFileVersion>${project.version}</txtFileVersion>
+								<fileDescription>${project.description}</fileDescription>
+								<copyright>Copyright Souchay.net, 2013-2014</copyright>
+								<productVersion>${swiftbrowser.exe.version}</productVersion>
+								<txtProductVersion>${project.version}</txtProductVersion>
+								<productName>${project.name}</productName>
+								<companyName>Souchay</companyName>
+								<internalName>${project.name}</internalName>
+								<originalFilename>SwiftBrowser.exe</originalFilename>
+							</versionInfo>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	<!-- DEPENDENCIES -->
+	<dependencies>
+		<!-- FindBugs annotations, only needed at compile time -->
+		<dependency>
+			<groupId>org.swinglabs</groupId>
+			<artifactId>swingx</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+	</dependencies>
+</project>

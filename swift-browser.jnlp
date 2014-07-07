@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp
+  spec="7.0+"
+  codebase="https://storage.fr1.cloudwatt.com/v1/AUTH_61b8fe6dfd0a4ce69f6622ea74444e0f/downloads/swift/" href="swift-browser.jnlp">
+  <information>
+    <title>OpenStack Swift Browser</title>
+    <vendor>Souchay.net</vendor>
+    <homepage href="docs/help.html"/>
+    <description>A Simple OpenStack Swift Browser</description>
+    <description kind="short">Let you connect to OpenStack Swift (aka Object Storage).</description>
+    <icon href="gui/openstack.png"/>
+    <offline-allowed/> 
+    <shortcut online="false" install="true">
+      <desktop/>
+      <menu submenu="Internet"/>
+    </shortcut>
+  </information>
+  <security>
+      <all-permissions/>
+  </security>
+  <resources>
+    <j2se version="1.7+" />
+    <jar href="swift-browser-SWIFTVERSION-bin.jar"/>
+  </resources>
+  <application-desc main-class="net.souchay.swift.gui.SwiftMain"/>
+</jnlp> 
