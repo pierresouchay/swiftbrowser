@@ -1,6 +1,6 @@
 /**
  *
- * $LastChangedBy: souchay $ - $LastChangedDate: 2014-01-13 09:47:38 +0100 (Lun 13 jan 2014) $
+ * $LastChangedBy: souchay $ - $LastChangedDate: 2014-07-07 13:30:37 +0200 (Lun 07 jul 2014) $
  */
 package net.souchay.swift.net;
 
@@ -22,7 +22,7 @@ import net.souchay.utilities.Application;
 /**
  * @copyright Pierre Souchay - 2013,2014
  * @author Pierre Souchay <pierre@souchay.net> $LastChangedBy: souchay $
- * @version $Revision: 3708 $
+ * @version $Revision: 3839 $
  * 
  */
 public class DefaultSwiftConnectionResult implements SwiftConnectionResultHandler, HttpConnectionListener {
@@ -147,7 +147,6 @@ public class DefaultSwiftConnectionResult implements SwiftConnectionResultHandle
             long kbps = currentBytes / delta;
             if (kbps > 0) {
                 final long remain = (totalBytes - currentBytes) / kbps / 1000;
-                // System.out.println(delta + " ; bps=" + bps);
                 if (kbps < 1000) {
                     m.setNote(Messages.getString("KbytesPerSec", kbps, delta / 1000, remain)); //$NON-NLS-1$
                 } else {

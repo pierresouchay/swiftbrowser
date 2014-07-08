@@ -1,5 +1,5 @@
 /**
- * $LastChangedBy: souchay $ - $LastChangedDate: 2014-07-07 12:17:13 +0200 (Lun 07 jul 2014) $
+ * $LastChangedBy: souchay $ - $LastChangedDate: 2014-07-08 09:53:12 +0200 (Mar 08 jul 2014) $
  */
 package net.souchay.swift.gui;
 
@@ -156,7 +156,7 @@ import org.jdesktop.swingx.VerticalLayout;
  * 
  * @copyright Pierre Souchay - 2013,2014
  * @author Pierre Souchay <pierre@souchay.net> $LastChangedBy: souchay $
- * @version $Revision: 3837 $
+ * @version $Revision: 3840 $
  */
 public class SwiftMain {
 
@@ -179,7 +179,7 @@ public class SwiftMain {
     /**
      * Public version
      */
-    public static String VERSION_SVN = "$Revision: 3837 $"; //$NON-NLS-1$
+    public static String VERSION_SVN = "$Revision: 3840 $"; //$NON-NLS-1$
 
     private final static void doRegenerateSecretKey1(SwiftConnections conn, SwiftConnectionResultHandler fileHandler)
             throws IOException {
@@ -374,8 +374,8 @@ public class SwiftMain {
             final TreeCellRenderer virtualFileRenderer = new DefaultTreeCellRenderer() {
 
                 /**
-             * 
-             */
+                 * Serialization
+                 */
                 private static final long serialVersionUID = -2062451677464143078L;
 
                 private int LOCKED = 1;

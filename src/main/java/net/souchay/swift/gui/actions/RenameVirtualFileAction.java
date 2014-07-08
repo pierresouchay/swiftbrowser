@@ -24,7 +24,7 @@ import net.souchay.swift.net.SwiftConnections;
 /**
  * 
  * @author Pierre Souchay <pierre@souchay.net> (last changed by $LastChangedBy: souchay $)
- * @version $Revision: 3830 $
+ * @version $Revision: 3840 $
  * 
  */
 public class RenameVirtualFileAction extends VirtualFileAction {
@@ -109,8 +109,7 @@ public class RenameVirtualFileAction extends VirtualFileAction {
                                     newFile.setSize(fx.getFile().getSize());
                                 }
                             });
-                            // FIXME: notify file add
-                            conn.del(fileHandler, fx.getContainer().getName(), fx.getName());
+                            conn.del(fileHandler, fx.getContainer().getName(), fx.getUnixPathWithoutContainer());
                             SwingUtilities.invokeLater(new Runnable() {
 
                                 @Override
