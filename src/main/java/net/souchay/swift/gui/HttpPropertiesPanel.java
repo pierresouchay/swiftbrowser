@@ -11,6 +11,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Level;
@@ -47,11 +48,12 @@ import net.souchay.utilities.URLParamEncoder;
 import org.jdesktop.swingx.JXHyperlink;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.VerticalLayout;
+import org.json.JSONException;
 
 /**
  * 
  * @author Pierre Souchay <pierre@souchay.net> (last changed by $LastChangedBy: souchay $)
- * @version $Revision: 3830 $
+ * @version $Revision: 3842 $
  * 
  */
 public class HttpPropertiesPanel extends JPanel implements ListSelectionListener {
@@ -176,10 +178,22 @@ public class HttpPropertiesPanel extends JPanel implements ListSelectionListener
             LayoutUtils.addRow(metaDataPanel, row++, Messages.getString("tenantName"), tenantName); //$NON-NLS-1$
             LayoutUtils.addRow(metaDataPanel, row++, Messages.getString("tenantDescription"), tenantDescription); //$NON-NLS-1$
             LayoutUtils.addRow(metaDataPanel, row++, Messages.getString("publicUrl"), publicUrl); //$NON-NLS-1$
-
+            String swiftFeatures = null;
+            try {
+                swiftFeatures = conn.getSwiftInformation().toString(2);
+            } catch (JSONException err) {
+                swiftFeatures = err.getLocalizedMessage();
+            }
+            JTextArea swiftFeaturesText = new JTextArea(swiftFeatures);
+            swiftFeaturesText.setEditable(false);
             tenantPanel.add(metaDataPanel, BorderLayout.NORTH);
             JTable tx = new JTable(tenantInformations);
-            tenantPanel.add(new JScrollPane(tx), BorderLayout.CENTER);
+            {
+                JTabbedPane subTab = new JTabbedPane();
+                subTab.addTab(Messages.getString("tenantHeaders"), new JScrollPane(tx)); //$NON-NLS-1$
+                subTab.addTab(Messages.getString("swiftFeatures"), new JScrollPane(swiftFeaturesText)); //$NON-NLS-1$
+                tenantPanel.add(subTab, BorderLayout.CENTER);
+            }
         }
         tab.addTab(Messages.getString("tenantInformation"), tenantPanel); //$NON-NLS-1$
 
@@ -455,15 +469,17 @@ public class HttpPropertiesPanel extends JPanel implements ListSelectionListener
                     try {
                         StringBuilder sb = new StringBuilder();
                         sb.append(conn.getTenant().getPublicUrl()).append(VirtualFile.VIRTUAL_FILE_SEPARATOR);
-                        sb.append(URLParamEncoder.encode(f.getContainerName()))
-                          .append(VirtualFile.VIRTUAL_FILE_SEPARATOR);
+                        sb.append(URLParamEncoder.encode(f.getContainerName()));
                         if (!f.isDirectory()) {
-                            sb.append(URLParamEncoder.encode(f.getUnixPathWithoutContainer()));
+                            List<String> pathAsList = f.getUnixPathWithoutContainerAsAList();
+                            for (String s : pathAsList) {
+                                if (!s.isEmpty())
+                                    sb.append(VirtualFile.VIRTUAL_FILE_SEPARATOR).append(URLParamEncoder.encode(s));
+                            }
                         } else {
-                            if (f instanceof ContainerVirtualFile) {
-                                sb.append(URLParamEncoder.encode(f.getUnixPathWithoutContainer()));
-                            } else {
-                                sb.append("?delimiter=/&prefix=").append(URLEncoder.encode(f.getUnixPathWithoutContainer(), "UTF-8")).append(VirtualFile.VIRTUAL_FILE_SEPARATOR); //$NON-NLS-1$ //$NON-NLS-2$
+                            if (!(f instanceof ContainerVirtualFile)) {
+                                sb.append(VirtualFile.VIRTUAL_FILE_SEPARATOR)
+                                  .append("?delimiter=/&prefix=").append(URLEncoder.encode(f.getUnixPathWithoutContainer(), "UTF-8")).append(VirtualFile.VIRTUAL_FILE_SEPARATOR); //$NON-NLS-1$ //$NON-NLS-2$
                             }
                         }
                         final String urlTxt = sb.toString();

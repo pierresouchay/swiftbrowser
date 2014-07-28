@@ -1,5 +1,5 @@
 /**
- * $LastChangedBy: souchay $ - $LastChangedDate: 2014-07-08 09:53:12 +0200 (Mar 08 jul 2014) $
+ * $LastChangedBy: souchay $ - $LastChangedDate: 2014-07-28 23:54:46 +0200 (Lun 28 jul 2014) $
  */
 package net.souchay.swift.gui;
 
@@ -156,7 +156,7 @@ import org.jdesktop.swingx.VerticalLayout;
  * 
  * @copyright Pierre Souchay - 2013,2014
  * @author Pierre Souchay <pierre@souchay.net> $LastChangedBy: souchay $
- * @version $Revision: 3840 $
+ * @version $Revision: 3844 $
  */
 public class SwiftMain {
 
@@ -179,7 +179,7 @@ public class SwiftMain {
     /**
      * Public version
      */
-    public static String VERSION_SVN = "$Revision: 3840 $"; //$NON-NLS-1$
+    public static String VERSION_SVN = "$Revision: 3844 $"; //$NON-NLS-1$
 
     private final static void doRegenerateSecretKey1(SwiftConnections conn, SwiftConnectionResultHandler fileHandler)
             throws IOException {
@@ -257,7 +257,7 @@ public class SwiftMain {
                             r.close();
                             in = null;
                         } catch (IOException e) {
-                            LOG.log(Level.SEVERE, "cannot read version", e); //$NON-NLS-1$
+                            LOG.log(Level.SEVERE, "cannot read version: " + e.getMessage(), e); //$NON-NLS-1$
                         }
                 }
             }

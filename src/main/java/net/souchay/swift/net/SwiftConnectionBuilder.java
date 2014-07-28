@@ -6,9 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,7 +29,92 @@ public class SwiftConnectionBuilder {
             // Root, we have to list the tenants
             return listTenants(userAgent, configuration, tenant.getToken()).toArray(new SwiftConnections[0]);
         }
-        return new SwiftConnections[] { new SwiftConnections(userAgent, configuration, tenant) };
+        return new SwiftConnections[] { addTenantFeatures(new SwiftConnections(userAgent, configuration, tenant)) };
+    }
+
+    private static Map<String, JSONObject> features = Collections.synchronizedMap(new WeakHashMap<String, JSONObject>());
+
+    private static SwiftConnections addTenantFeatures(SwiftConnections connection) {
+        try {
+            if (connection.getTenant() != null && (connection.getTenant().getPublicUrl() != null)) {
+                String url = connection.getTenant().getPublicUrl();
+                int idx = url.indexOf("/v"); //$NON-NLS-1$
+                if (idx > 0) {
+                    String urlToQuery = url.substring(0, idx);
+                    urlToQuery += "/info"; //$NON-NLS-1$
+                    JSONObject obj = features.get(urlToQuery);
+                    if (obj == null) {
+                        obj = getJSONInfo(urlToQuery);
+                        features.put(urlToQuery, obj);
+                    }
+                    connection.swiftInformation = obj;
+                }
+            }
+            return connection;
+        } catch (Throwable err) {
+            // This is bad, but we may have issues to fetch /info in case of misconfigured swift
+            return connection;
+        }
+    }
+
+    private static JSONObject getJSONInfo(final String url) {
+        HttpURLConnection connection = null;
+        try {
+            connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.setRequestProperty(SwiftConnections.ACCEPT, SwiftConnections.CONTENT_TYPE_JSON);
+            connection.setUseCaches(true);
+            if (200 != connection.getResponseCode()) {
+                JSONObject obj = new JSONObject();
+                try {
+                    obj.put("url", url); //$NON-NLS-1$
+                    obj.put("httpCode", connection.getResponseCode()); //$NON-NLS-1$
+                    return obj;
+                } catch (JSONException ignored) {
+                    LOG.log(Level.SEVERE, "Unexpected JSONExeption: " + ignored.getMessage(), ignored); //$NON-NLS-1$
+                    return null;
+                }
+            }
+            // Get Response
+            InputStream is = connection.getInputStream();
+
+            StringBuffer response = new StringBuffer();
+            {
+                BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+                try {
+                    String line;
+                    while ((line = rd.readLine()) != null) {
+                        response.append(line).append('\n');
+                    }
+                } finally {
+                    rd.close();
+                    is = null;
+                }
+            }
+            try {
+                return new JSONObject(response.toString());
+            } catch (JSONException ex) {
+                throw new IOException("Error parsing JSON for URL " + url + ": " + ex.getLocalizedMessage(), ex); //$NON-NLS-1$ //$NON-NLS-2$
+            } finally {
+                if (is != null)
+                    is.close();
+            }
+        } catch (IOException e) {
+            JSONObject obj = new JSONObject();
+            try {
+                obj.put("url", url); //$NON-NLS-1$
+                obj.put("error", e.getClass().getName()); //$NON-NLS-1$
+                obj.put("description", e.getLocalizedMessage()); //$NON-NLS-1$
+                return obj;
+            } catch (JSONException ignored) {
+                LOG.log(Level.SEVERE, "Unexpected JSONExeption: " + ignored.getMessage(), ignored); //$NON-NLS-1$
+                return null;
+            }
+        } finally {
+
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
     }
 
     private static List<SwiftConnections> listTenants(final String userAgent, SwiftConfiguration configuration,
@@ -93,7 +181,7 @@ public class SwiftConnectionBuilder {
                     SwiftConfiguration cfg = new SwiftConfiguration(configuration.getCredential()
                                                                                  .cloneForTenantId(t.getString(SwiftConstantsServer.ID)),
                                                                     configuration.getTokenUrl());
-                    connections.add(new SwiftConnections(userAgent, cfg));
+                    connections.add(addTenantFeatures(new SwiftConnections(userAgent, cfg)));
                 }
                 return connections;
             } catch (JSONException ex) {

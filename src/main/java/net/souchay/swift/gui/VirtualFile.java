@@ -1,6 +1,6 @@
 /**
  *
- * $LastChangedBy: souchay $ - $LastChangedDate: 2014-07-07 12:17:13 +0200 (Lun 07 jul 2014) $
+ * $LastChangedBy: souchay $ - $LastChangedDate: 2014-07-28 10:36:08 +0200 (Lun 28 jul 2014) $
  */
 package net.souchay.swift.gui;
 
@@ -12,6 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -24,7 +25,7 @@ import net.souchay.swift.net.FsConnection;
 /**
  * @copyright Pierre Souchay - 2013,2014
  * @author Pierre Souchay <pierre@souchay.net> $LastChangedBy: souchay $
- * @version $Revision: 3837 $
+ * @version $Revision: 3841 $
  * 
  */
 public class VirtualFile implements Comparable<VirtualFile>, ElementChangedListener<FileIFace>, Serializable {
@@ -359,6 +360,22 @@ public class VirtualFile implements Comparable<VirtualFile>, ElementChangedListe
             return getName();
         else
             return parent.getUnixPathWithContainer() + VIRTUAL_FILE_SEPARATOR + getName();
+    }
+
+    /**
+     * Get the Unix path starting at container
+     * 
+     * @return the Unix-like path
+     */
+    public List<String> getUnixPathWithoutContainerAsAList() {
+        final VirtualFile parent = _parent.get();
+        if (parent == null || parent.getParent() == null)
+            return new LinkedList<String>();
+        else {
+            final List<String> p = parent.getUnixPathWithoutContainerAsAList();
+            p.add(getName());
+            return p;
+        }
     }
 
     /**
