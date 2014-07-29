@@ -1,6 +1,6 @@
 /**
  *
- * $LastChangedBy: souchay $ - $LastChangedDate: 2014-07-07 12:12:06 +0200 (Lun 07 jul 2014) $
+ * $LastChangedBy: souchay $ - $LastChangedDate: 2014-07-29 10:13:09 +0200 (Mar 29 jul 2014) $
  */
 package net.souchay.swift.gui.actions;
 
@@ -28,7 +28,7 @@ import net.souchay.swift.gui.Messages;
 
 /**
  * @author Pierre Souchay <pierre@souchay.net> (last changed by $LastChangedBy: souchay $)
- * @version $Revision: 3835 $
+ * @version $Revision: 3846 $
  * 
  */
 public class InstallDesktopFileAction extends AbstractAction {
@@ -197,11 +197,11 @@ public class InstallDesktopFileAction extends AbstractAction {
         File iconFile = new File(iconsDir, nameOfApp + ".png");
         StringBuilder sb = new StringBuilder();
         sb.append("[Desktop Entry]\n");
-        sb.append("Encoding=UTF-8");
+        sb.append("Encoding=UTF-8\n");
         sb.append("Version=1.0\n");
         sb.append("Type=Application\n");
         sb.append("Terminal=false\n");
-        sb.append("Exec=java -DXmx1G -jar \"")
+        sb.append("Exec=java -jar \"")
           .append(new File(InstallDesktopFileAction.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getAbsolutePath())
           .append("\" %u\n");
         sb.append("Name=").append(nameOfApp).append('\n');

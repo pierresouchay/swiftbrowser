@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Terminal=false
+Exec=java -DXmx1G -jar "/usr/bin/swift-browser-bin.jar" %u
+Name=SwiftBrowser
+Categories=Network;Utility;FileTransfer;FileManager;FileTools;Java
+Icon=/home/pierre/.config/swiftBrowser/icons/SwiftBrowser.png
+Comment=OpenStack Swift Browser - Explore your cloud files
+Comment[fr]=Explorateur OpenStack Swift - Explorez vos fichiers dans le Cloud
+Comment[en]=OpenStack Swift Browser - Explore your cloud files

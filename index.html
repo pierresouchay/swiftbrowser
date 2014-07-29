@@ -52,6 +52,7 @@ SwiftBrowser - A Very simple OpenStack Swift Client.
 <li><a href="SwiftBrowser.exe">Windows</a></li>
 <li><a href="swift-browser-SWIFTVERSION-bin.jar">Linux / Unix</a></li>
 <li><a href="SwiftBrowser%20SWIFTVERSION.dmg">Mac OS X App</a></li>
+<li><a href="swiftbrowser-SWIFTVERSION.deb">Debian Package</a></li>
 <li><a href="swift-browser.jnlp">Java Web Start</a></li>
 <li><a href="https://github.com/pierresouchay/swiftbrowser">Source (github)</a></li>
 </ul>
@@ -62,10 +63,11 @@ SwiftBrowser - A Very simple OpenStack Swift Client.
 <tr><th>Date</th><th>Release</th><th>Comments</th></tr>
 </thead>
 <tbody>
+<tr><td>2014-07-29</td><td>20140729 (3847)</td><td>First debian package (experimental)<br/>Fixed several typos in translation.<br/>Removed debug information</td></tr>
 <tr><td>2014-07-28</td><td>20140728 (3844)</td><td>Fixed curl syntax now always working with virtual subfolders<br/>Added Swift Features tab in Http Inspector</td></tr>
 <tr><td>2014-07-08</td><td>20140708 (3840)</td><td>Fix rename files on cloud that was not properly working when in a subfolder</td></tr>
 <tr><td>2014-07-07</td><td>20140707 (3837)</td><td>Code cleanup and optimizations<br/>added hyperlinks in about section</td></tr>
-<tr><td>2014-07-04</td><td>20140704 (3833)</td><td>More precise messages in french translation.<br/>Fixed rename feature when renaming files in virtual subfolders.<br/>Added ability to choose a specific encryption key (Key 1 or Key 2) when sharing with other users (so revoking invitations is easier).<br>Code Size optimization (removed unused classes)</td></tr>
+<tr><td>2014-07-04</td><td>20140704 (3833)</td><td>More precise messages in french translation.<br/>Fixed rename feature when renaming files in virtual subfolders.<br/>Added ability to choose a specific encryption key (Key 1 or Key 2) when sharing with other users (so revoking invitations is easier).<br/>Code Size optimization (removed unused classes)</td></tr>
 <tr><td>2014-06-30</td><td>20140630 (3826)</td><td>Inspector now display nicely when no selection is available. Added remote rename file feature.</td></tr>
 <tr><td>2014-06-23</td><td>20140623 (3825)</td><td>Added specific User-Agent (by default: SwiftBrowser/{VERSION} ({OS} {OS_ARCH}-{OS_VERSION} ; {LOCALE}) that can be overrider with -DuserAgent=...)</td></tr>
 <tr><td>2014-06-18</td><td>20140618 (3824)</td><td>Fixed multithreading issues on accounts with multiple tenants</td></tr>
@@ -73,23 +75,23 @@ SwiftBrowser - A Very simple OpenStack Swift Client.
 <tr><td>2014-06-11</td><td>20140611 (3814)</td><td>Fixed bug when having many X-Account-Temp-Url values that may re-init temp URLs</td></tr>
 <tr><td>2014-05-24</td><td>20140524 (3811)</td><td>Code refactoring to optimize memory and speed</td></tr>
 <tr><td>2014-05-23</td><td>20140523 (3809)</td><td>Fixed buggy display of sizes when size bigger than 1G</td></tr>
-<tr><td>2014-05-22</td><td>20140522 (3807)</td><td>Added Tenant information panel in HTTP Inspector<br>Now support direct copy when source tenant = destination tenant during drag and drop<br>GUI Speed improvements</td></tr>
+<tr><td>2014-05-22</td><td>20140522 (3807)</td><td>Added Tenant information panel in HTTP Inspector<br/>Now support direct copy when source tenant = destination tenant during drag and drop<br/>GUI Speed improvements</td></tr>
 <tr><td>2014-05-13</td><td>20140513 (3803)</td><td>Fixed regression that caused view not being refreshed when uploading files from right treeview</td></tr>
-<tr><td>2014-05-06</td><td>20140506 (3802)</td><td>Drag and Drop fixes. Now refresh automatically when uploading URLs into application.<br>Less refreshes when uploading several files.<br>Status bar expands only when downloads take a long time to avoid flickering<br>Speed improvements for very large listings</td></tr>
-<tr><td>2014-05-05</td><td>20140505 (3796)</td><td>Memory improvements for large accounts.<br>Automatic refresh in HTTP Headers view<br>Do not override user-set header when re-uploading a file</td></tr>
+<tr><td>2014-05-06</td><td>20140506 (3802)</td><td>Drag and Drop fixes. Now refresh automatically when uploading URLs into application.<br/>Less refreshes when uploading several files.<br/>Status bar expands only when downloads take a long time to avoid flickering<br/>Speed improvements for very large listings</td></tr>
+<tr><td>2014-05-05</td><td>20140505 (3796)</td><td>Memory improvements for large accounts.<br/>Automatic refresh in HTTP Headers view<br/>Do not override user-set header when re-uploading a file</td></tr>
 <tr><td>2014-04-28</td><td>20140428 (3794)</td><td>Performance improvement for very large containers + Multithreading fixes.</td></tr>
-<tr><td>2014-03-18</td><td>20140318 (3787)</td><td>ACL Dialog fixes.<br>Drag and Drop fixes (Drag and drop was not properly dropping files into a leaf directory)</td></tr>
-<tr><td>2014-03-17</td><td>20140317 (3784)</td><td>Fixed automatic icon installation on Linux for non-English Linux Users.<br>Fixed quotas and file informations not always property displayed in status bar.</td></tr>
-<tr><td>2014-03-14</td><td>20140314 (3775)</td><td>Fixed some ACL parsing bugs.<br>Added ability to override Swift URLs (useful for sharing containers).</td></tr>
+<tr><td>2014-03-18</td><td>20140318 (3787)</td><td>ACL Dialog fixes.<br/>Drag and Drop fixes (Drag and drop was not properly dropping files into a leaf directory)</td></tr>
+<tr><td>2014-03-17</td><td>20140317 (3784)</td><td>Fixed automatic icon installation on Linux for non-English Linux Users.<br/>Fixed quotas and file informations not always property displayed in status bar.</td></tr>
+<tr><td>2014-03-14</td><td>20140314 (3775)</td><td>Fixed some ACL parsing bugs.<br/>Added ability to override Swift URLs (useful for sharing containers).</td></tr>
 <tr><td>2014-03-12</td><td>20140312 (3774)</td><td>iOS compatibility for uploading pictures. Added ability to use tenants where only some containers are available. Minor GUI fixes (quotas and information about tenant not properly displayed)</td></tr>
 <tr><td>2014-03-01</td><td>20140301 (3764)</td><td>Added Shortcut creation for Linux. First stable release.</td></tr>
 <tr><td>2014-02-21</td><td>3747</td><td>Nicer HTTP Headers inspector with ability to set HTTP Headers with completion. Better support of virtual folder. Various fixes.</td></tr>
-<tr><td>2014-02-05</td><td>3745</td><td>Added Save As... feature (work on diretories as well).<br>Added persistant empty directories structures.<br>Code refactoring that may improve refresh performance in near future.</td></tr>
-<tr><td>2014-01-28</td><td>3739</td><td>Added ability to set limits to the files your friends can upload in your directory<br>cleaner error messages when something goes wrong with authentication.<br>Curl syntax encoding fixes<br>Window title identifies tenant<br>You can now use the share with friends feature from a container.</td></tr>
-<tr><td>2014-01-24</td><td>3728</td><td>Added ability to select sharing duration<br>Fixed Drag and Drop for Mac / Windows<br>Added DMG installation virtual disk for Mac OS X</td></tr>
-<tr><td>2014-01-21</td><td>3726</td><td>Added full support for analysing Container ACL. Added ability to set new ACLs with human readable names<br>Container icons now are displayed nicely when containers are public<br>Unicode fixes</td></tr>
-<tr><td>2014-01-15</td><td>3631</td><td>Inline disply of some types when sharing<br>Sharing files to upload and for download with friends</td></tr>
-<tr><td>2014-01-11</td><td>3706</td><td>Added Mime database to remote files<br>icons</td></tr>
+<tr><td>2014-02-05</td><td>3745</td><td>Added Save As... feature (work on diretories as well).<br/>Added persistant empty directories structures.<br/>Code refactoring that may improve refresh performance in near future.</td></tr>
+<tr><td>2014-01-28</td><td>3739</td><td>Added ability to set limits to the files your friends can upload in your directory<br/>cleaner error messages when something goes wrong with authentication.<br/>Curl syntax encoding fixes<br/>Window title identifies tenant<br/>You can now use the share with friends feature from a container.</td></tr>
+<tr><td>2014-01-24</td><td>3728</td><td>Added ability to select sharing duration<br/>Fixed Drag and Drop for Mac / Windows<br/>Added DMG installation virtual disk for Mac OS X</td></tr>
+<tr><td>2014-01-21</td><td>3726</td><td>Added full support for analysing Container ACL. Added ability to set new ACLs with human readable names<br/>Container icons now are displayed nicely when containers are public<br/>Unicode fixes</td></tr>
+<tr><td>2014-01-15</td><td>3631</td><td>Inline disply of some types when sharing<br/>Sharing files to upload and for download with friends</td></tr>
+<tr><td>2014-01-11</td><td>3706</td><td>Added Mime database to remote files<br/>icons</td></tr>
 <tr><td>2014-01-09</td><td>3680</td><td>First public release : drag and drop. Linux/Mac/Windows versions. English / French versions.</td></tr>
 </tbody>
 </table>

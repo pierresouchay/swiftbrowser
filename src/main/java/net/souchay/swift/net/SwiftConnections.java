@@ -1,6 +1,6 @@
 /**
  *
- * $LastChangedBy: souchay $ - $LastChangedDate: 2014-07-28 23:50:42 +0200 (Lun 28 jul 2014) $
+ * $LastChangedBy: souchay $ - $LastChangedDate: 2014-07-29 09:56:04 +0200 (Mar 29 jul 2014) $
  */
 package net.souchay.swift.net;
 
@@ -63,7 +63,7 @@ import org.json.JSONObject;
 /**
  * @copyright Pierre Souchay - 2013,2014
  * @author Pierre Souchay <pierre@souchay.net> $LastChangedBy: souchay $
- * @version $Revision: 3842 $
+ * @version $Revision: 3845 $
  * 
  */
 public class SwiftConnections implements FsConnection {
@@ -473,14 +473,6 @@ public class SwiftConnections implements FsConnection {
         this.userAgent = userAgent;
         this.configuration = configuration;
         this.tenant = tenant;
-        if (tenant != null) {
-            String url = tenant.getPublicUrl();
-            System.out.println(url);
-            if (url != null && url.indexOf("/v1/") > 0) {
-                int idx = url.indexOf("/v1");
-                System.out.println("Querying features=" + url.substring(0, idx) + "/info");
-            }
-        }
     }
 
     /**

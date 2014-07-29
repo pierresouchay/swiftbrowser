@@ -1,5 +1,5 @@
 /**
- * $LastChangedBy: souchay $ - $LastChangedDate: 2014-07-28 23:54:46 +0200 (Lun 28 jul 2014) $
+ * $LastChangedBy: souchay $ - $LastChangedDate: 2014-07-29 10:41:28 +0200 (Mar 29 jul 2014) $
  */
 package net.souchay.swift.gui;
 
@@ -154,9 +154,9 @@ import org.jdesktop.swingx.VerticalLayout;
  * 
  * Was first a test project for learning Swift... so code structure is not perfect :-)
  * 
- * @copyright Pierre Souchay - 2013,2014
+ * @copyright Pierre Souchay - 2013, 2014
  * @author Pierre Souchay <pierre@souchay.net> $LastChangedBy: souchay $
- * @version $Revision: 3844 $
+ * @version $Revision: 3847 $
  */
 public class SwiftMain {
 
@@ -179,7 +179,7 @@ public class SwiftMain {
     /**
      * Public version
      */
-    public static String VERSION_SVN = "$Revision: 3844 $"; //$NON-NLS-1$
+    public static String VERSION_SVN = "$Revision: 3847 $"; //$NON-NLS-1$
 
     private final static void doRegenerateSecretKey1(SwiftConnections conn, SwiftConnectionResultHandler fileHandler)
             throws IOException {
