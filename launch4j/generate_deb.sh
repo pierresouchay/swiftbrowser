@@ -13,11 +13,13 @@ mkdir -p $TEMP_DIR/debian/DEBIAN
 mkdir -p $TEMP_DIR/debian/usr/lib
 mkdir -p $TEMP_DIR/debian/usr/bin
 mkdir -p $TEMP_DIR/debian/usr/share/applications
+mkdir -p $TEMP_DIR/debian/usr/share/icons/hicolor/64x64
 mkdir -p $TEMP_DIR/debian/usr/share/doc/$PACKAGE_NAME
 echo "Package: $PACKAGE_NAME" > $TEMP_DIR/debian/DEBIAN/control
 echo "Version: $PACKAGE_VERSION" >> $TEMP_DIR/debian/DEBIAN/control
 cat debian/control >> $TEMP_DIR/debian/DEBIAN/control
 cp ../target/swift-browser-$PACKAGE_VERSION-bin.jar $TEMP_DIR/debian/usr/lib/swiftbrowser.jar
+cp debian/swiftbrowser.png $TEMP_DIR/debian/usr/share/icons/hicolor/64x64
 cp debian/swiftbrowser.desktop $TEMP_DIR/debian/usr/share/applications/
 cp debian/copyright $TEMP_DIR/debian/usr/share/doc/$PACKAGE_NAME/
 grep '<td>' ../index.html |sed 's/<tr><td>\(.*\)<\/td><td>\(.*\)<\/td><td>\(.*\)<\/td><\/tr>/\1 - \2 - \3/g' |sed 's/<br\/>/ \/\/ /g' > $TEMP_DIR/debian/usr/share/doc/$PACKAGE_NAME/changelog.gz

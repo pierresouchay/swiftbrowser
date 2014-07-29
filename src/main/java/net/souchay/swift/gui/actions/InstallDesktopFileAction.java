@@ -1,6 +1,6 @@
 /**
  *
- * $LastChangedBy: souchay $ - $LastChangedDate: 2014-07-29 10:13:09 +0200 (Mar 29 jul 2014) $
+ * $LastChangedBy: souchay $ - $LastChangedDate: 2014-07-29 12:05:28 +0200 (Mar 29 jul 2014) $
  */
 package net.souchay.swift.gui.actions;
 
@@ -28,7 +28,7 @@ import net.souchay.swift.gui.Messages;
 
 /**
  * @author Pierre Souchay <pierre@souchay.net> (last changed by $LastChangedBy: souchay $)
- * @version $Revision: 3846 $
+ * @version $Revision: 3849 $
  * 
  */
 public class InstallDesktopFileAction extends AbstractAction {
@@ -205,7 +205,7 @@ public class InstallDesktopFileAction extends AbstractAction {
           .append(new File(InstallDesktopFileAction.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getAbsolutePath())
           .append("\" %u\n");
         sb.append("Name=").append(nameOfApp).append('\n');
-        sb.append("Categories=Network;Utility;FileTransfer;FileManager;FileTools;Java\n");
+        sb.append("Categories=Network;Utility;FileTransfer;FileManager;FileTools;Java;\n");
         sb.append("Icon=").append(iconFile.getAbsolutePath()).append('\n');
         if (comments != null && !comments.isEmpty()) {
             String english = comments.get("en");
