@@ -1,5 +1,5 @@
 /**
- * $LastChangedBy: souchay $ - $LastChangedDate: 2014-07-29 10:41:28 +0200 (Mar 29 jul 2014) $
+ * $LastChangedBy: souchay $ - $LastChangedDate: 2014-07-30 11:43:28 +0200 (Mer 30 jul 2014) $
  */
 package net.souchay.swift.gui;
 
@@ -113,6 +113,7 @@ import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import net.souchay.swift.gui.ContainerIFace.FileIFace;
 import net.souchay.swift.gui.SwiftToVirtualFiles.OnResult;
+import net.souchay.swift.gui.actions.CheckUpdatesAction;
 import net.souchay.swift.gui.actions.CreateVirtualDirectoryAction;
 import net.souchay.swift.gui.actions.DeleteVirtualFileAction;
 import net.souchay.swift.gui.actions.InstallDesktopFileAction;
@@ -156,7 +157,7 @@ import org.jdesktop.swingx.VerticalLayout;
  * 
  * @copyright Pierre Souchay - 2013, 2014
  * @author Pierre Souchay <pierre@souchay.net> $LastChangedBy: souchay $
- * @version $Revision: 3847 $
+ * @version $Revision: 3850 $
  */
 public class SwiftMain {
 
@@ -179,7 +180,7 @@ public class SwiftMain {
     /**
      * Public version
      */
-    public static String VERSION_SVN = "$Revision: 3847 $"; //$NON-NLS-1$
+    public static String VERSION_SVN = "$Revision: 3850 $"; //$NON-NLS-1$
 
     private final static void doRegenerateSecretKey1(SwiftConnections conn, SwiftConnectionResultHandler fileHandler)
             throws IOException {
@@ -328,6 +329,8 @@ public class SwiftMain {
                             aboutWindows.dispatchEvent(new WindowEvent(aboutWindows, WindowEvent.WINDOW_CLOSING));
                         }
                     });
+                    JButton updates = new JButton(new CheckUpdatesAction(getVersion(), getUserAgent()));
+                    south.add(updates, BorderLayout.WEST);
                     south.add(btn, BorderLayout.EAST);
                     jp.add(south, BorderLayout.SOUTH);
                 }

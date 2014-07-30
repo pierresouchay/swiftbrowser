@@ -1,0 +1,4 @@
+SwiftBrowserVersion
+SWIFTVERSION
+https://swiftbrowser.souchay.net/index.html
+
