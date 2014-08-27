@@ -1,6 +1,6 @@
 /**
  *
- * $LastChangedBy: souchay $ - $LastChangedDate: 2014-01-09 16:21:53 +0100 (Jeu 09 jan 2014) $
+ * $LastChangedBy: souchay $ - $LastChangedDate: 2014-08-27 14:23:17 +0200 (Mer 27 aoû 2014) $
  */
 package net.souchay.swift.net;
 
@@ -13,7 +13,7 @@ import java.util.UUID;
 /**
  * @copyright Pierre Souchay - 2013,2014
  * @author Pierre Souchay <pierre@souchay.net> $LastChangedBy: souchay $
- * @version $Revision: 3700 $
+ * @version $Revision: 3856 $
  * 
  */
 public class SwiftConfiguration implements Comparable<SwiftConfiguration> {
@@ -46,7 +46,9 @@ public class SwiftConfiguration implements Comparable<SwiftConfiguration> {
 
     private SwiftCredentials credential;
 
-    private URL tokenUrl;
+    private String tokenUrlAsString;
+
+    private URL tokenUrlAsUrl;
 
     /**
      * get the credential
@@ -73,8 +75,17 @@ public class SwiftConfiguration implements Comparable<SwiftConfiguration> {
      * 
      * @return the tokenUrl
      */
-    public URL getTokenUrl() {
-        return tokenUrl;
+    public URL getTokenUrlAsUrl() {
+        return tokenUrlAsUrl;
+    }
+
+    /**
+     * get the tokenUrl
+     * 
+     * @return the tokenUrl
+     */
+    public String getTokenUrlAsString() {
+        return tokenUrlAsString;
     }
 
     /**
@@ -103,9 +114,11 @@ public class SwiftConfiguration implements Comparable<SwiftConfiguration> {
      * @param tokenUrl the tokenUrl to set
      */
     public void setTokenUrl(URL tokenUrl) {
-        final URL oldValue = this.tokenUrl;
-        this.tokenUrl = tokenUrl;
-        support.firePropertyChange(PROPERTY_TOKEN_URL, oldValue, tokenUrl);
+        final String newValue = tokenUrl.toExternalForm();
+        final String oldValue = this.tokenUrlAsString;
+        this.tokenUrlAsUrl = tokenUrl;
+        this.tokenUrlAsString = newValue;
+        support.firePropertyChange(PROPERTY_TOKEN_URL, oldValue, newValue);
     }
 
     /**
@@ -115,7 +128,7 @@ public class SwiftConfiguration implements Comparable<SwiftConfiguration> {
     public SwiftConfiguration(SwiftCredentials credential, URL tokenUrl) {
         super();
         this.credential = credential;
-        this.tokenUrl = tokenUrl;
+        setTokenUrl(tokenUrl);
     }
 
     /**
@@ -126,7 +139,7 @@ public class SwiftConfiguration implements Comparable<SwiftConfiguration> {
      */
     public SwiftConfiguration(Properties p) throws MalformedURLException {
         String u = p.getProperty(PROPERTY_TOKEN_URL);
-        this.tokenUrl = new URL(u);
+        setTokenUrl(new URL(u));
         this.id = p.getProperty(PROPERTY_ID);
         this.name = p.getProperty(PROPERTY_NAME, u);
         this.credential = new SwiftJSonCredentials(p);
@@ -139,7 +152,7 @@ public class SwiftConfiguration implements Comparable<SwiftConfiguration> {
      */
     public void saveProperties(Properties p) {
         p.setProperty(PROPERTY_TOKEN_URL,
-                      getTokenUrl() == null ? "http://example.com/v2/tokens" : getTokenUrl().toExternalForm()); //$NON-NLS-1$
+                      getTokenUrlAsString() == null ? "http://example.com/v2/tokens" : getTokenUrlAsString()); //$NON-NLS-1$
         p.setProperty(PROPERTY_ID, getId());
         p.setProperty(PROPERTY_NAME, getName());
         this.credential.saveProperties(p);

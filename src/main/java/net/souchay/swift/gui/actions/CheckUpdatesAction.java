@@ -37,7 +37,7 @@ public class CheckUpdatesAction extends AbstractAction {
      * Constructor
      */
     public CheckUpdatesAction(String version, String userAgent) {
-        this.currentVersion = version;
+        this.currentVersion = version.trim();
         this.userAgent = userAgent;
         TITLE = Messages.getString("updatesChecker"); //$NON-NLS-1$
         putValue(Action.NAME, TITLE);
@@ -75,7 +75,7 @@ public class CheckUpdatesAction extends AbstractAction {
 
             @Override
             public void run() {
-                final String updateServerUrl = "https://swiftbrowser.souchay.net/version.txt"; //$NON-NLS-1$
+                final String updateServerUrl = "https://storage.fr1.cloudwatt.com/v1/AUTH_61b8fe6dfd0a4ce69f6622ea74444e0f/downloads/swift/version.txt"; //$NON-NLS-1$
                 BufferedReader reader = null;
                 try {
                     URL url = new URL(updateServerUrl);
@@ -90,10 +90,9 @@ public class CheckUpdatesAction extends AbstractAction {
                         throw new IOException(updateServerUrl
                                               + " was found, but first line content is incorrect: '" + swiftBrowser + "', we expected something else. Are you behind a misconfigured proxy ?"); //$NON-NLS-1$ //$NON-NLS-2$
                     }
-                    String newVersion = reader.readLine();
-                    System.out.println(newVersion);
+                    String newVersion = reader.readLine().trim();
                     String urlToFetch = reader.readLine();
-                    if (getCurrentVersion().compareTo(newVersion) > 0) {
+                    if (!getCurrentVersion().startsWith(newVersion)) {
                         if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(null,
                                                                                     Messages.getString("UpdatesChecker.needsUpdate", newVersion), //$NON-NLS-1$
                                                                                     TITLE,

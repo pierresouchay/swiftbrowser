@@ -1,6 +1,6 @@
 /**
  *
- * $LastChangedBy: souchay $ - $LastChangedDate: 2014-07-29 09:56:04 +0200 (Mar 29 jul 2014) $
+ * $LastChangedBy: souchay $ - $LastChangedDate: 2014-08-27 14:23:17 +0200 (Mer 27 aoû 2014) $
  */
 package net.souchay.swift.net;
 
@@ -52,6 +52,7 @@ import net.souchay.swift.gui.ObjectIFace;
 import net.souchay.swift.gui.VirtualFile;
 import net.souchay.swift.gui.table.ConnectionLog;
 import net.souchay.swift.gui.table.ConnectionsTableModel;
+import net.souchay.swift.net.SwiftConstantsServer.URL_TYPE;
 import net.souchay.utilities.CryptUtilities;
 import net.souchay.utilities.HexUtilities;
 import net.souchay.utilities.InputStreamWithProgress;
@@ -63,7 +64,7 @@ import org.json.JSONObject;
 /**
  * @copyright Pierre Souchay - 2013,2014
  * @author Pierre Souchay <pierre@souchay.net> $LastChangedBy: souchay $
- * @version $Revision: 3845 $
+ * @version $Revision: 3856 $
  * 
  */
 public class SwiftConnections implements FsConnection {
@@ -322,7 +323,7 @@ public class SwiftConnections implements FsConnection {
         support.removePropertyChangeListener(listener);
     }
 
-    private static final Charset CHARSET = Charset.forName("UTF-8"); //$NON-NLS-1$
+    static final Charset CHARSET_UTF8 = Charset.forName("UTF-8"); //$NON-NLS-1$
 
     /**
      * Convenience method
@@ -403,11 +404,11 @@ public class SwiftConnections implements FsConnection {
                                                   + " do not exist, cannot create a signature!"); //$NON-NLS-1$
                 }
             }
-            final SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(CHARSET), algorithm);
+            final SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(CHARSET_UTF8), algorithm);
             Mac mac;
             mac = Mac.getInstance(algorithm);
             mac.init(keySpec);
-            byte[] result = mac.doFinal(data.getBytes(CHARSET));
+            byte[] result = mac.doFinal(data.getBytes(CHARSET_UTF8));
             return HexUtilities.toHexStringWithoutSeparator(result);
         } catch (NoSuchAlgorithmException err) {
             throw new InvalidKeyException(err);
@@ -510,7 +511,7 @@ public class SwiftConnections implements FsConnection {
      */
     public final static String CONTENT_TYPE_FORM_URL_ENCODED = "application/x-www-form-urlencoded"; //$NON-NLS-1$
 
-    private final static Charset PASSWORD_ENCODING = Charset.forName("UTF-8"); //$NON-NLS-1$
+    private final static Charset PASSWORD_ENCODING = CHARSET_UTF8; // UTF-8
 
     /**
      * Authenticates
@@ -527,12 +528,13 @@ public class SwiftConnections implements FsConnection {
     private static BufferedReader openBufferedReader(HttpURLConnection connection) throws IOException {
         final String contentEncoding = connection.getHeaderField("Content-Encoding"); //$NON-NLS-1$
         if ("gzip".equalsIgnoreCase(contentEncoding)) { //$NON-NLS-1$
-            return new BufferedReader(new InputStreamReader(new GZIPInputStream(connection.getInputStream()), CHARSET));
+            return new BufferedReader(new InputStreamReader(new GZIPInputStream(connection.getInputStream()),
+                                                            CHARSET_UTF8));
         } else if ("deflate".equalsIgnoreCase(contentEncoding)) { //$NON-NLS-1$
             return new BufferedReader(new InputStreamReader(new InflaterInputStream(connection.getInputStream()),
-                                                            CHARSET));
+                                                            CHARSET_UTF8));
         } else {
-            return new BufferedReader(new InputStreamReader(connection.getInputStream(), CHARSET));
+            return new BufferedReader(new InputStreamReader(connection.getInputStream(), CHARSET_UTF8));
         }
     }
 
@@ -546,7 +548,7 @@ public class SwiftConnections implements FsConnection {
         LOG.fine("Starting authentication..."); //$NON-NLS-1$
         try {
             final String urlParameters = configuration.getCredential().serialize();
-            connection = (HttpURLConnection) configuration.getTokenUrl().openConnection();
+            connection = (HttpURLConnection) configuration.getTokenUrlAsUrl().openConnection();
             connection.setConnectTimeout(30000);
             connection.setReadTimeout(31000);
             // connection.setRequestProperty(CONTENT_TYPE, );
@@ -569,8 +571,7 @@ public class SwiftConnections implements FsConnection {
             wr.close();
             if (200 != connection.getResponseCode()) {
                 StringBuilder sb = new StringBuilder();
-                sb.append(configuration.getTokenUrl().toExternalForm())
-                  .append(": ").append(connection.getResponseCode()) //$NON-NLS-1$
+                sb.append(configuration.getTokenUrlAsString()).append(": ").append(connection.getResponseCode()) //$NON-NLS-1$
                   .append(": ").append(connection.getResponseMessage()); //$NON-NLS-1$ 
                 sb.append("\n-- Post\n").append(urlParameters); //$NON-NLS-1$
                 sb.append("\n-- Request"); //$NON-NLS-1$
@@ -662,7 +663,12 @@ public class SwiftConnections implements FsConnection {
         if (description == null || description.trim().isEmpty())
             description = name;
         String publicURLForSwift = null;
-        if (credentials != null && credentials.getOverridedSwiftUrl() != null) {
+        String urlType = SwiftConstantsServer.URL_TYPE.publicURL.getType();
+        if (credentials != null) {
+            urlType = credentials.getUrlType().getType();
+        }
+        if (credentials != null && urlType.equals(URL_TYPE.overrideUrl.getType())
+            && credentials.getOverridedSwiftUrl() != null) {
             publicURLForSwift = credentials.getOverridedSwiftUrl();
             LOG.info("Overriding Swift URL : " + publicURLForSwift); //$NON-NLS-1$
         } else {
@@ -676,11 +682,18 @@ public class SwiftConnections implements FsConnection {
                         JSONArray endPoints = endPoint.getJSONArray(SwiftConstantsServer.ENDPOINTS_OBJECT);
                         for (int j = 0; j < endPoints.length(); j++) {
                             JSONObject cur = (JSONObject) endPoints.get(j);
-                            publicURLForSwift = cur.getString(SwiftConstantsServer.PUBLIC_URL);
-                            if (publicURLForSwift != null && !publicURLForSwift.trim().isEmpty()) {
-                                LOG.info("Found Public URL=" + publicURLForSwift); //$NON-NLS-1$
-                                break;
+                            try {
+                                publicURLForSwift = cur.getString(urlType);
+                                if (publicURLForSwift != null && !publicURLForSwift.trim().isEmpty()) {
+                                    LOG.info("Found " + urlType + "=" + publicURLForSwift); //$NON-NLS-1$ //$NON-NLS-2$
+                                    break;
+                                }
+                            } catch (JSONException ignoredPathNotFound) {
                             }
+                        }
+                        if (publicURLForSwift == null) {
+                            throw new IOException("Could not find URL " + urlType + " in:\n'" + endPoint.toString(2) //$NON-NLS-1$//$NON-NLS-2$
+                                                  + "'"); //$NON-NLS-1$
                         }
                     }
                 }
@@ -1328,7 +1341,7 @@ public class SwiftConnections implements FsConnection {
 
     @Override
     public File getTemporaryDirectory() throws IOException {
-        String path = CryptUtilities.encodeToSha256AsString(getTenant().getPublicUrl().getBytes(CHARSET));
+        String path = CryptUtilities.encodeToSha256AsString(getTenant().getPublicUrl().getBytes(CHARSET_UTF8));
         File tmp = File.createTempFile("xxxxx", ".dat"); //$NON-NLS-1$//$NON-NLS-2$
         tmp.delete();
         File dir = new File(tmp.getParentFile(), path);

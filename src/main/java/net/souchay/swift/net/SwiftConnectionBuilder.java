@@ -79,7 +79,7 @@ public class SwiftConnectionBuilder {
 
             StringBuffer response = new StringBuffer();
             {
-                BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+                BufferedReader rd = new BufferedReader(new InputStreamReader(is, SwiftConnections.CHARSET_UTF8));
                 try {
                     String line;
                     while ((line = rd.readLine()) != null) {
@@ -120,7 +120,7 @@ public class SwiftConnectionBuilder {
     private static List<SwiftConnections> listTenants(final String userAgent, SwiftConfiguration configuration,
             String token) throws IOException {
         HttpURLConnection connection = null;
-        String tenantsUrl = configuration.getTokenUrl().toExternalForm().replace("/tokens", "/tenants"); //$NON-NLS-1$//$NON-NLS-2$
+        String tenantsUrl = configuration.getTokenUrlAsString().replace("/tokens", "/tenants"); //$NON-NLS-1$//$NON-NLS-2$
         LOG.fine("Listing tenants..."); //$NON-NLS-1$
         try {
             // final String urlParameters = configuration.getCredential().serialize();
@@ -180,7 +180,7 @@ public class SwiftConnectionBuilder {
                     JSONObject t = tenants.getJSONObject(i);
                     SwiftConfiguration cfg = new SwiftConfiguration(configuration.getCredential()
                                                                                  .cloneForTenantId(t.getString(SwiftConstantsServer.ID)),
-                                                                    configuration.getTokenUrl());
+                                                                    configuration.getTokenUrlAsUrl());
                     connections.add(addTenantFeatures(new SwiftConnections(userAgent, cfg)));
                 }
                 return connections;

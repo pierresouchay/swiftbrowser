@@ -6,12 +6,11 @@
 <title>Swift Browser beta</title>
 <style type="text/css">
 body {background: white; color: black;}
+code{margin: 1em; display:block; background-color:black; color:white; padding: 1em;}
 form {margin: 0;}
 h1 {font-family: Arial, sans-serif; line-height: 0.85em; border-bottom: 2px solid;
   margin-bottom: 0.33em; padding-bottom: 0;}
-
 textarea {background: #EEF;}
-
 #footer {border-top: 1px solid #000; color: #999; font: italic 75% sans-serif;}
 #footer p {margin: 0 0 1em 0;}
 #footer img {float: right; margin: 0 0 0.5em 2em;}
@@ -56,6 +55,16 @@ SwiftBrowser - A Very simple OpenStack Swift Client.
 <li><a href="swift-browser.jnlp">Java Web Start</a></li>
 <li><a href="https://github.com/pierresouchay/swiftbrowser">Source (github)</a></li>
 </ul>
+<p id="footer">Note for Mac OS Users: The application is not signed. To make it work (for OS Lion or more) you, need to enable to execute unsigned applications (System Settings &gt; General &gt; Authorize unsigned applications).</p>
+
+<h2>Ubuntu/Debian repository</h2>
+<div>1. Add the repository to the list of repositories:
+<code>wget -O - https://storage.fr1.cloudwatt.com/v1/AUTH_61b8fe6dfd0a4ce69f6622ea74444e0f/downloads/debian/pierre%40souchay.net.gpg.key - | sudo apt-key add -</code>
+2. add the repository to the list of sources by adding this line in your /etc/apt/sources.list :
+<code>sudo apt-add-repository 'deb https://storage.fr1.cloudwatt.com/v1/AUTH_61b8fe6dfd0a4ce69f6622ea74444e0f/downloads/debian/ stable main'</code>
+3. finish the installation :
+<code>sudo apt-get update &amp;&amp; sudo apt-get install swiftbrowser</code>
+</div>
 
 <h2>History</h2>
 <table>
@@ -63,6 +72,9 @@ SwiftBrowser - A Very simple OpenStack Swift Client.
 <tr><th>Date</th><th>Release</th><th>Comments</th></tr>
 </thead>
 <tbody>
+<tr><td>2014-08-27</td><td>20140827 (3856)</td><td>Avoid to block URL list GUI when DNS is not responding.<br/>Allow to use Internal/Public/Forced swift URL from GUI</td></tr>
+<tr><td>2014-08-26</td><td>N/A</td><td>Added debian repository.</td></tr>
+<tr><td>2014-07-31</td><td>20140731 (3855)</td><td>Added about action into main connection window for all non-Mac OS Operating systems</td></tr>
 <tr><td>2014-07-30</td><td>20140730 (3850)</td><td>Added Automatic Updates detection for new versions (in about window)<br/>Translations typos</td></tr>
 <tr><td>2014-07-29</td><td>20140729 (3847)</td><td>First debian package (experimental)<br/>Fixed several typos in translation.<br/>Removed debug information</td></tr>
 <tr><td>2014-07-28</td><td>20140728 (3844)</td><td>Fixed curl syntax now always working with virtual subfolders<br/>Added Swift Features tab in Http Inspector</td></tr>
@@ -70,7 +82,7 @@ SwiftBrowser - A Very simple OpenStack Swift Client.
 <tr><td>2014-07-07</td><td>20140707 (3837)</td><td>Code cleanup and optimizations<br/>added hyperlinks in about section</td></tr>
 <tr><td>2014-07-04</td><td>20140704 (3833)</td><td>More precise messages in french translation.<br/>Fixed rename feature when renaming files in virtual subfolders.<br/>Added ability to choose a specific encryption key (Key 1 or Key 2) when sharing with other users (so revoking invitations is easier).<br/>Code Size optimization (removed unused classes)</td></tr>
 <tr><td>2014-06-30</td><td>20140630 (3826)</td><td>Inspector now display nicely when no selection is available. Added remote rename file feature.</td></tr>
-<tr><td>2014-06-23</td><td>20140623 (3825)</td><td>Added specific User-Agent (by default: SwiftBrowser/{VERSION} ({OS} {OS_ARCH}-{OS_VERSION} ; {LOCALE}) that can be overrider with -DuserAgent=...)</td></tr>
+<tr><td>2014-06-23</td><td>20140623 (3825)</td><td>Added specific User-Agent (by default: SwiftBrowser/{VERSION} ({OS} {OS_ARCH}-{OS_VERSION} ; {LOCALE}) that can be overridden with -DuserAgent=...)</td></tr>
 <tr><td>2014-06-18</td><td>20140618 (3824)</td><td>Fixed multithreading issues on accounts with multiple tenants</td></tr>
 <tr><td>2014-06-17</td><td>20140617 (3818)</td><td>French translation typos + display K/M/Gib instead of K/M/Gb where applicable (power of 2 unit instead of power of ten units)</td></tr>
 <tr><td>2014-06-11</td><td>20140611 (3814)</td><td>Fixed bug when having many X-Account-Temp-Url values that may re-init temp URLs</td></tr>
@@ -91,12 +103,10 @@ SwiftBrowser - A Very simple OpenStack Swift Client.
 <tr><td>2014-01-28</td><td>3739</td><td>Added ability to set limits to the files your friends can upload in your directory<br/>cleaner error messages when something goes wrong with authentication.<br/>Curl syntax encoding fixes<br/>Window title identifies tenant<br/>You can now use the share with friends feature from a container.</td></tr>
 <tr><td>2014-01-24</td><td>3728</td><td>Added ability to select sharing duration<br/>Fixed Drag and Drop for Mac / Windows<br/>Added DMG installation virtual disk for Mac OS X</td></tr>
 <tr><td>2014-01-21</td><td>3726</td><td>Added full support for analysing Container ACL. Added ability to set new ACLs with human readable names<br/>Container icons now are displayed nicely when containers are public<br/>Unicode fixes</td></tr>
-<tr><td>2014-01-15</td><td>3631</td><td>Inline disply of some types when sharing<br/>Sharing files to upload and for download with friends</td></tr>
+<tr><td>2014-01-15</td><td>3631</td><td>Inline display of some types when sharing<br/>Sharing files to upload and for download with friends</td></tr>
 <tr><td>2014-01-11</td><td>3706</td><td>Added Mime database to remote files<br/>icons</td></tr>
 <tr><td>2014-01-09</td><td>3680</td><td>First public release : drag and drop. Linux/Mac/Windows versions. English / French versions.</td></tr>
 </tbody>
 </table>
-
-<p id="footer">Note for Mac OS Users: The application is not signed. To make it work (for OS Lion or more) you, need to enable to execute unsigned applications (System Settings &gt; General &gt; Authorize unsigned applications).</p>
 </body>
 </html>

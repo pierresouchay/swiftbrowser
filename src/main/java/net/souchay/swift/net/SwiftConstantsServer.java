@@ -1,13 +1,13 @@
 /**
  *
- * $LastChangedBy: souchay $ - $LastChangedDate: 2014-01-09 16:21:53 +0100 (Jeu 09 jan 2014) $
+ * $LastChangedBy: souchay $ - $LastChangedDate: 2014-08-27 14:23:17 +0200 (Mer 27 aoû 2014) $
  */
 package net.souchay.swift.net;
 
 /**
  * @copyright Pierre Souchay - 2013,2014
  * @author Pierre Souchay <pierre@souchay.net> $LastChangedBy: souchay $
- * @version $Revision: 3700 $
+ * @version $Revision: 3856 $
  * 
  */
 public interface SwiftConstantsServer extends SwiftConstants {
@@ -27,10 +27,59 @@ public interface SwiftConstantsServer extends SwiftConstants {
      */
     public static final String ENDPOINTS_OBJECT = "endpoints"; //$NON-NLS-1$
 
-    /**
-     * Public URL
-     */
-    public static final String PUBLIC_URL = "publicURL"; //$NON-NLS-1$
+    public static enum URL_TYPE {
+        /**
+         * Use the publicURL as defined in keystone
+         */
+        publicURL("publicURL"), //$NON-NLS-1$
+        /**
+         * Use Internal URL as defined by keystine
+         */
+        internalUrl("internalURL"), //$NON-NLS-1$
+        /**
+         * Use adminURL as defined by keystone
+         */
+        adminUrl("adminURL"), //$NON-NLS-1$
+        /**
+         * Use Override URL
+         */
+        overrideUrl("overrideURL"); //$NON-NLS-1$
+
+        /**
+         * Constructor
+         * 
+         * @param type
+         */
+        private URL_TYPE(String type) {
+            this.type = type;
+        }
+
+        /**
+         * Find a value from its type
+         * 
+         * @param type
+         * @return an URL type, null if not found
+         */
+        public static URL_TYPE findValue(String type) {
+            for (URL_TYPE t : URL_TYPE.values()) {
+                if (t.getType().equals(type)) {
+                    return t;
+                }
+            }
+            return null;
+        }
+
+        /**
+         * get the type
+         * 
+         * @return the type
+         */
+        public String getType() {
+            return type;
+        }
+
+        private final String type;
+    };
 
     /**
      * Service Catalog object

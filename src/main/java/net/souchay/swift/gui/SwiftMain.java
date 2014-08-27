@@ -1,5 +1,5 @@
 /**
- * $LastChangedBy: souchay $ - $LastChangedDate: 2014-07-30 11:43:28 +0200 (Mer 30 jul 2014) $
+ * $LastChangedBy: souchay $ - $LastChangedDate: 2014-08-27 14:23:17 +0200 (Mer 27 aoû 2014) $
  */
 package net.souchay.swift.gui;
 
@@ -157,7 +157,7 @@ import org.jdesktop.swingx.VerticalLayout;
  * 
  * @copyright Pierre Souchay - 2013, 2014
  * @author Pierre Souchay <pierre@souchay.net> $LastChangedBy: souchay $
- * @version $Revision: 3850 $
+ * @version $Revision: 3856 $
  */
 public class SwiftMain {
 
@@ -180,8 +180,15 @@ public class SwiftMain {
     /**
      * Public version
      */
-    public static String VERSION_SVN = "$Revision: 3850 $"; //$NON-NLS-1$
+    public static String VERSION_SVN = "$Revision: 3856 $"; //$NON-NLS-1$
 
+    /**
+     * Private Key regeneration
+     * 
+     * @param conn
+     * @param fileHandler
+     * @throws IOException
+     */
     private final static void doRegenerateSecretKey1(SwiftConnections conn, SwiftConnectionResultHandler fileHandler)
             throws IOException {
         conn.generate_account_meta_temp_url_key(fileHandler);
@@ -205,6 +212,38 @@ public class SwiftMain {
     }
 
     private static JFrame aboutWindows;
+
+    private final static Action aboutAction = new AbstractAction() {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -7195896745467092294L;
+
+        {
+            final String name = Messages.getString("about.title"); //$NON-NLS-1$
+            putValue(Action.NAME, name);
+            putValue(Action.SHORT_DESCRIPTION, name);
+            putValue(Action.SMALL_ICON, SwiftConfigurationEditor.loadIcon("about", name)); //$NON-NLS-1$
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            showAbout();
+        }
+    };
+
+    private static volatile Action updateAction = null;
+
+    private final static ImageIcon refreshIcon = SwiftConfigurationEditor.loadIcon("refresh", "refresh"); //$NON-NLS-1$ //$NON-NLS-2$
+
+    public static Action getUpdateAction() {
+        if (updateAction == null) {
+            updateAction = new CheckUpdatesAction(getVersion(), getUserAgent());
+            updateAction.putValue(Action.SMALL_ICON, refreshIcon);
+        }
+        return updateAction;
+    }
 
     private static String _VERSION = null;
 
@@ -329,7 +368,7 @@ public class SwiftMain {
                             aboutWindows.dispatchEvent(new WindowEvent(aboutWindows, WindowEvent.WINDOW_CLOSING));
                         }
                     });
-                    JButton updates = new JButton(new CheckUpdatesAction(getVersion(), getUserAgent()));
+                    JButton updates = new JButton(getUpdateAction());
                     south.add(updates, BorderLayout.WEST);
                     south.add(btn, BorderLayout.EAST);
                     jp.add(south, BorderLayout.SOUTH);
@@ -770,7 +809,6 @@ public class SwiftMain {
                     return super.getTableCellRendererComponent(table, val, isSelected, hasFocus, row, column);
                 }
             });
-            final ImageIcon refreshIcon = SwiftConfigurationEditor.loadIcon("refresh", "refresh"); //$NON-NLS-1$ //$NON-NLS-2$
 
             final AbstractAction refreshAllAction = new AbstractAction() {
 
@@ -1661,25 +1699,7 @@ public class SwiftMain {
                                     showSwiftConfigurationPanel();
                                 }
                             });
-                            menu.add(new AbstractAction() {
-
-                                /**
-                                 * 
-                                 */
-                                private static final long serialVersionUID = -7195896745467092294L;
-
-                                {
-                                    final String name = Messages.getString("about.title"); //$NON-NLS-1$
-                                    putValue(Action.NAME, name);
-                                    putValue(Action.SHORT_DESCRIPTION, name);
-                                    putValue(Action.SMALL_ICON, SwiftConfigurationEditor.loadIcon("about", name)); //$NON-NLS-1$
-                                }
-
-                                @Override
-                                public void actionPerformed(ActionEvent e) {
-                                    showAbout();
-                                }
-                            });
+                            menu.add(aboutAction);
                             menubar.add(menu);
                             {
                                 Map<String, String> comments = new HashMap<String, String>();
@@ -2188,11 +2208,11 @@ public class SwiftMain {
                                         JOptionPane.showMessageDialog(panel,
                                                                       Messages.getString("cannotAuthenticateMessage", //$NON-NLS-1$
                                                                                          ex.getLocalizedMessage(),
-                                                                                         configuration.getTokenUrl(),
+                                                                                         configuration.getTokenUrlAsUrl(),
                                                                                          configuration.getCredential()
                                                                                                       .getUser()),
                                                                       Messages.getString("cannotAuthenticateTitle", //$NON-NLS-1$
-                                                                                         configuration.getTokenUrl()),
+                                                                                         configuration.getTokenUrlAsUrl()),
                                                                       JOptionPane.ERROR_MESSAGE);
                                     } finally {
                                         self.setEnabled(true);
@@ -2206,7 +2226,13 @@ public class SwiftMain {
                         }
                     }
                 };
-                panel = new SwiftConfigurationPanel(connect);
+                Action[] additionalActions;
+                if (!Application.isMacOs()) {
+                    additionalActions = new Action[] { aboutAction };
+                } else {
+                    additionalActions = null;
+                }
+                panel = new SwiftConfigurationPanel(connect, additionalActions);
                 JFrame f = new JFrame(Messages.getString("listOfConnections")); //$NON-NLS-1$
                 f.setIconImage(icon.getImage());
                 f.setContentPane(panel);
@@ -2263,7 +2289,7 @@ public class SwiftMain {
              */
             @Override
             public boolean handleAbout() {
-                showAbout();
+                aboutAction.actionPerformed(null);
                 return true;
             }
 
@@ -2279,7 +2305,8 @@ public class SwiftMain {
                                                                         args[3],
                                                                         args[4],
                                                                         null,
-                                                                        null);
+                                                                        null,
+                                                                        SwiftJSonCredentials.DEFAULT_URL_TYPE);
             doConnect(new SwiftConfiguration(credentials, new URL(args[0])));
         } else if (args.length > 0) {
             SwiftJSonCredentials credentials = new SwiftJSonCredentials(args[1],
@@ -2287,7 +2314,8 @@ public class SwiftMain {
                                                                         SwiftJSonCredentials.DEFAULT_TENANT_TYPE,
                                                                         args[3],
                                                                         null,
-                                                                        null);
+                                                                        null,
+                                                                        SwiftJSonCredentials.DEFAULT_URL_TYPE);
             doConnect(new SwiftConfiguration(credentials, new URL(args[0])));
         } else {
             showSwiftConfigurationPanel();

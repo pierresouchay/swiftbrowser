@@ -5,13 +5,13 @@
 	<groupId>net.souchay.swift</groupId>
 	<artifactId>swift-browser</artifactId>
 	<packaging>jar</packaging>
-	<version>20140730</version>
+	<version>20140827</version>
 	<name>Swift Browser</name>
 	<description>A OpenStack Swift Browser</description>
 	<properties>
 		<project.build.mainClass>net.souchay.swift.gui.SwiftMain</project.build.mainClass>
 		<proguard.exec.version>4.11</proguard.exec.version>
-		<swiftbrowser.exe.version>1.14.7.30</swiftbrowser.exe.version>
+		<swiftbrowser.exe.version>1.14.8.27</swiftbrowser.exe.version>
 	</properties>
 	<build>
 		<!-- PLUGINS - config is inherited from parent -->

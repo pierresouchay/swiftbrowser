@@ -1,4 +1,4 @@
 SwiftBrowserVersion
 SWIFTVERSION
-https://swiftbrowser.souchay.net/index.html
+https://storage.fr1.cloudwatt.com/v1/AUTH_61b8fe6dfd0a4ce69f6622ea74444e0f/downloads/swift/index.html
 

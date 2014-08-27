@@ -8,6 +8,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -20,6 +22,7 @@ import java.util.Map;
 import java.util.Vector;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -29,6 +32,7 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.event.DocumentEvent;
@@ -39,6 +43,7 @@ import net.souchay.swift.gui.MasterPasswordService;
 import net.souchay.swift.gui.MasterPasswordService.MasterPasswordServiceNotAvailableException;
 import net.souchay.swift.gui.Messages;
 import net.souchay.swift.net.SwiftConfiguration;
+import net.souchay.swift.net.SwiftConstantsServer.URL_TYPE;
 import net.souchay.swift.net.SwiftJSonCredentials;
 
 /**
@@ -46,7 +51,7 @@ import net.souchay.swift.net.SwiftJSonCredentials;
  * 
  * @copyright Pierre Souchay - 2013,2014
  * @author Pierre Souchay <pierre@souchay.net> $LastChangedBy: souchay $
- * @version $Revision: 3830 $
+ * @version $Revision: 3856 $
  * 
  */
 public class SwiftConfigurationEditor extends JPanel {
@@ -98,6 +103,15 @@ public class SwiftConfigurationEditor extends JPanel {
 
     private final JTextField username = new JTextField();
 
+    private final JRadioButton usePublicURL = new JRadioButton(Messages.getString("SwiftConfigurationEditor.usePublicUrl", //$NON-NLS-1$
+                                                                                  true));
+
+    private final JRadioButton usePrivateURL = new JRadioButton(Messages.getString("SwiftConfigurationEditor.usePrivateUrl", //$NON-NLS-1$
+                                                                                   false));
+
+    private final JRadioButton forceSpecificUrl = new JRadioButton(Messages.getString("SwiftConfigurationEditor.useOverrideSwiftURL", //$NON-NLS-1$
+                                                                                      false));
+
     private final JPasswordField password = new JPasswordField();
 
     private Color regularBgColor = null;
@@ -133,7 +147,8 @@ public class SwiftConfigurationEditor extends JPanel {
                                              String.valueOf(tenantType.getSelectedItem()),
                                              tenant.getText(),
                                              fixedContainers.getText(),
-                                             override);
+                                             override,
+                                             forceSpecificUrl.isSelected() ? URL_TYPE.overrideUrl : (usePrivateURL.isSelected() ? URL_TYPE.internalUrl : URL_TYPE.publicURL));
         }
         // Noop
         SwiftConfiguration configuration;
@@ -236,7 +251,7 @@ public class SwiftConfigurationEditor extends JPanel {
                 boolean enable = tenantType.getSelectedItem() != null;
                 tenant.setEnabled(enable);
                 fixedContainers.setEnabled(enable);
-                overridedSwiftURL.setEnabled(enable);
+                // overridedSwiftURL.setEnabled(enable);
             }
         });
         fixedContainers.setToolTipText(Messages.getString("fixedContainersHelp")); //$NON-NLS-1$
@@ -323,10 +338,49 @@ public class SwiftConfigurationEditor extends JPanel {
         }
 
         {
+            c.gridx = 0;
+            c.gridwidth = 3;
+            c.anchor = GridBagConstraints.CENTER;
+            c.fill = GridBagConstraints.HORIZONTAL;
+            JPanel jp = new JPanel(new FlowLayout());
+            jp.add(usePublicURL);
+            jp.add(usePrivateURL);
+            jp.add(forceSpecificUrl);
+            super.add(jp, c);
+            c.gridy++;
+        }
+
+        {
+            c.gridx = 0;
+            c.gridwidth = 1;
+            c.anchor = GridBagConstraints.LINE_END;
+            c.fill = GridBagConstraints.NONE;
             JLabel lbl = new JLabel(Messages.getString("SwiftConfigurationEditor.overrideSwiftURL")); //$NON-NLS-1$
             lbl.setLabelFor(overridedSwiftURL);
             super.add(lbl, c);
+            c.gridx = 1;
+            c.gridwidth = 2;
+            c.anchor = GridBagConstraints.LINE_START;
+            c.fill = GridBagConstraints.HORIZONTAL;
+            super.add(overridedSwiftURL, c);
             c.gridy++;
+        }
+
+        {
+            ButtonGroup group = new ButtonGroup();
+            group.add(usePublicURL);
+            group.add(forceSpecificUrl);
+            group.add(usePrivateURL);
+            forceSpecificUrl.addItemListener(new ItemListener() {
+
+                @Override
+                public void itemStateChanged(ItemEvent e) {
+                    boolean enable = forceSpecificUrl.isSelected();
+                    overridedSwiftURL.setEnabled(enable);
+                    if (enable)
+                        overridedSwiftURL.requestFocus();
+                }
+            });
         }
 
         c.gridy = 0;
@@ -370,15 +424,11 @@ public class SwiftConfigurationEditor extends JPanel {
             c.insets = new Insets(0, 5, 0, 0);
             c.gridx++;
             super.add(fixedContainers, c);
-
-            c.insets = new Insets(0, 0, 0, 0);
             c.gridy++;
-            c.gridx = 1;
-            c.gridwidth = 2;
-            super.add(overridedSwiftURL, c);
+            c.insets = new Insets(0, 0, 0, 0);
         }
 
-        c.gridy++;
+        c.gridy += 2;
         c.gridx = 0;
         c.anchor = GridBagConstraints.SOUTHEAST;
         c.fill = GridBagConstraints.NONE;
@@ -392,6 +442,9 @@ public class SwiftConfigurationEditor extends JPanel {
             }
         };
         tenantType.addActionListener(a);
+        usePrivateURL.addActionListener(a);
+        usePublicURL.addActionListener(a);
+        forceSpecificUrl.addActionListener(a);
         predefinedURLs.addActionListener(a);
         DocumentListener doc = new DocumentListener() {
 
@@ -480,6 +533,9 @@ public class SwiftConfigurationEditor extends JPanel {
                 this.tenant.setText(null);
                 this.fixedContainers.setText(""); //$NON-NLS-1$
                 this.overridedSwiftURL.setText(""); //$NON-NLS-1$
+                this.usePublicURL.setSelected(true);
+                this.usePrivateURL.setSelected(false);
+                this.forceSpecificUrl.setSelected(false);
             } else {
                 SwiftJSonCredentials c = (SwiftJSonCredentials) configuration.getCredential();
                 char[] password = c.getPassword();
@@ -502,8 +558,10 @@ public class SwiftConfigurationEditor extends JPanel {
                 this.tenantType.setSelectedItem(c.getTenantType());
                 this.fixedContainers.setText(c.getContainers());
                 this.overridedSwiftURL.setText(c.getOverridedSwiftUrl());
-                String url = configuration.getTokenUrl() == null ? CLOUDWATT.url : configuration.getTokenUrl()
-                                                                                                .toExternalForm();
+                this.usePublicURL.setSelected(URL_TYPE.publicURL.equals(c.getUrlType()));
+                this.usePrivateURL.setSelected(URL_TYPE.internalUrl.equals(c.getUrlType()));
+                this.forceSpecificUrl.setSelected(URL_TYPE.overrideUrl.equals(c.getUrlType()));
+                String url = configuration.getTokenUrlAsString() == null ? CLOUDWATT.url : configuration.getTokenUrlAsString();
                 for (MapedValue en : staticPredefined) {
                     if (en.url.equals(url)) {
                         this.predefinedURLs.setSelectedItem(en);
@@ -569,6 +627,12 @@ public class SwiftConfigurationEditor extends JPanel {
 
     private final static ImageIcon fileIcon = loadIcon("file", "file"); //$NON-NLS-1$ //$NON-NLS-2$
 
+    /**
+     * Loads a given mime icon
+     * 
+     * @param mime the mime type to load
+     * @return the mime-type
+     */
     public static ImageIcon loadMimeIcon(String mime) {
         if (mime == null)
             return fileIcon;

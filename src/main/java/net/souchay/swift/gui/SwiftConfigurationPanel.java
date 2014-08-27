@@ -1,6 +1,6 @@
 /**
  *
- * $LastChangedBy: souchay $ - $LastChangedDate: 2014-01-11 02:39:12 +0100 (Sam 11 jan 2014) $
+ * $LastChangedBy: souchay $ - $LastChangedDate: 2014-07-30 16:33:46 +0200 (Mer 30 jul 2014) $
  */
 package net.souchay.swift.gui;
 
@@ -34,7 +34,7 @@ import org.jdesktop.swingx.JXCollapsiblePane;
 /**
  * @copyright Pierre Souchay - 2013,2014
  * @author Pierre Souchay <pierre@souchay.net> $LastChangedBy: souchay $
- * @version $Revision: 3704 $
+ * @version $Revision: 3855 $
  * 
  */
 public class SwiftConfigurationPanel extends JPanel {
@@ -192,7 +192,7 @@ public class SwiftConfigurationPanel extends JPanel {
     /**
      * Constructor
      */
-    public SwiftConfigurationPanel(final Action connectAction) {
+    public SwiftConfigurationPanel(final Action connectAction, final Action... otherActions) {
         super(new BorderLayout());
         JLabel loadingConfigs = new JLabel(Messages.getString("loadingConfigurations")); //$NON-NLS-1$
         allConfigurations = new JList<SwiftConfiguration>(configs);
@@ -204,7 +204,8 @@ public class SwiftConfigurationPanel extends JPanel {
         add(south, BorderLayout.SOUTH);
         south.setCollapsed(true);
         south.setAnimated(true);
-        Action actions[] = new Action[] { connectAction };
+
+        final Action actions[] = new Action[] { connectAction };
         editor = new SwiftConfigurationEditor(actions);
         connectAction.setEnabled(editor.isReadyToConnect());
         editor.getPassword().addActionListener(new ActionListener() {
@@ -251,6 +252,12 @@ public class SwiftConfigurationPanel extends JPanel {
         });
         toolbar.add(addAction);
         toolbar.add(deleteAction);
+        if (otherActions != null) {
+            toolbar.addSeparator();
+            for (Action a : otherActions) {
+                toolbar.add(a);
+            }
+        }
         // toolbar.add(moveDownAction);
         // toolbar.add(moveUpAction);
         super.add(toolbar, BorderLayout.PAGE_START);

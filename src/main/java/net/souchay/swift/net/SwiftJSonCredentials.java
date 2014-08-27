@@ -1,6 +1,6 @@
 /**
  *
- * $LastChangedBy: souchay $ - $LastChangedDate: 2014-06-05 10:51:11 +0200 (Jeu 05 jui 2014) $
+ * $LastChangedBy: souchay $ - $LastChangedDate: 2014-08-27 14:23:17 +0200 (Mer 27 aoû 2014) $
  */
 package net.souchay.swift.net;
 
@@ -8,13 +8,14 @@ import java.awt.Component;
 import java.util.Arrays;
 import java.util.Properties;
 import net.souchay.swift.gui.MasterPasswordService;
+import net.souchay.swift.net.SwiftConstantsServer.URL_TYPE;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
  * @copyright Pierre Souchay - 2013,2014
  * @author Pierre Souchay <pierre@souchay.net> $LastChangedBy: souchay $
- * @version $Revision: 3813 $
+ * @version $Revision: 3856 $
  * 
  */
 public class SwiftJSonCredentials implements SwiftCredentials {
@@ -53,6 +54,16 @@ public class SwiftJSonCredentials implements SwiftCredentials {
      * Property name
      */
     public final static String PROPERTY_CRYPTED_PASSWORD = "cryptedPassword"; //$NON-NLS-1$
+
+    /**
+     * Property name
+     */
+    public final static String PROPERTY_URL_TYPE = "urlType"; //$NON-NLS-1$
+
+    /**
+     * Public URL by default
+     */
+    public static final URL_TYPE DEFAULT_URL_TYPE = URL_TYPE.publicURL;
 
     /**
      * The user
@@ -132,7 +143,7 @@ public class SwiftJSonCredentials implements SwiftCredentials {
      * @param password
      */
     public SwiftJSonCredentials(String user, char[] password) {
-        this(user, password, null, null, null, null);
+        this(user, password, null, null, null, null, DEFAULT_URL_TYPE);
     }
 
     /**
@@ -144,33 +155,25 @@ public class SwiftJSonCredentials implements SwiftCredentials {
      * @param tenantValue
      */
     public SwiftJSonCredentials(String user, char[] password, String tenantType, String tenantValue, String containers,
-            String overridedSwiftUrl) {
+            String overridedSwiftUrl, URL_TYPE urlType) {
         this.user = user;
         this.password = password;
         this.tenantType = tenantType;
         this.tenantValue = tenantValue;
         this.containers = containers;
         this.overridedSwiftUrl = overridedSwiftUrl;
+        if (urlType == null) {
+            if (overridedSwiftUrl != null)
+                urlType = URL_TYPE.overrideUrl;
+            else
+                urlType = URL_TYPE.publicURL;
+        }
+        this.urlType = urlType;
     }
 
     public final static String DEFAULT_TENANT_TYPE = SwiftConstantsClient.TENANT_NAME;
 
     public final static String DEFAULT_TENANT_TYPE_ID = "tenantId"; //$NON-NLS-1$
-
-    /**
-     * Constructor
-     * 
-     * @param user
-     * @param password
-     * @param tenantName
-     * @deprecated use {@link #SwiftJSonCredentials(String, char[], String, String)} instead by using
-     *             {@link #DEFAULT_TENANT_TYPE} for tenantType
-     */
-    @Deprecated
-    public SwiftJSonCredentials(String user, char[] password, String tenantName, String containers,
-            String overridedSwiftUrl) {
-        this(user, password, DEFAULT_TENANT_TYPE, tenantName, containers, overridedSwiftUrl);
-    }
 
     /**
      * Constructor using properties
@@ -183,7 +186,8 @@ public class SwiftJSonCredentials implements SwiftCredentials {
              p.getProperty(PROPERTY_TENANT_TYPE),
              p.getProperty(PROPERTY_TENANT_VALUE),
              p.getProperty(PROPERTY_CONTAINERS_VALUE),
-             p.getProperty(PROPERTY_OVERRIDED_SWIFT_URL));
+             p.getProperty(PROPERTY_OVERRIDED_SWIFT_URL),
+             URL_TYPE.findValue(p.getProperty(PROPERTY_URL_TYPE)));
         setCryptedPassword(p.getProperty(PROPERTY_CRYPTED_PASSWORD));
     }
 
@@ -211,6 +215,17 @@ public class SwiftJSonCredentials implements SwiftCredentials {
         if (getOverridedSwiftUrl() != null && getOverridedSwiftUrl().startsWith("http")) { //$NON-NLS-1$
             p.setProperty(PROPERTY_OVERRIDED_SWIFT_URL, getOverridedSwiftUrl());
         }
+        p.setProperty(PROPERTY_URL_TYPE, getUrlType().getType());
+    }
+
+    /**
+     * get the urlType
+     * 
+     * @return the urlType
+     */
+    @Override
+    public URL_TYPE getUrlType() {
+        return urlType;
     }
 
     /**
@@ -234,6 +249,8 @@ public class SwiftJSonCredentials implements SwiftCredentials {
     }
 
     private final String user, tenantType, tenantValue;
+
+    private final URL_TYPE urlType;
 
     private final String containers;
 
@@ -261,7 +278,13 @@ public class SwiftJSonCredentials implements SwiftCredentials {
 
     @Override
     public SwiftJSonCredentials cloneForTenantId(String tenantId) {
-        return new SwiftJSonCredentials(user, password, DEFAULT_TENANT_TYPE_ID, tenantId, containers, overridedSwiftUrl);
+        return new SwiftJSonCredentials(user,
+                                        password,
+                                        DEFAULT_TENANT_TYPE_ID,
+                                        tenantId,
+                                        containers,
+                                        overridedSwiftUrl,
+                                        urlType);
     }
 
     /**

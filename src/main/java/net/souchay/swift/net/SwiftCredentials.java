@@ -1,15 +1,16 @@
 /**
  *
- * $LastChangedBy: souchay $ - $LastChangedDate: 2014-03-14 10:46:43 +0100 (Ven 14 mar 2014) $
+ * $LastChangedBy: souchay $ - $LastChangedDate: 2014-08-27 14:23:17 +0200 (Mer 27 aoû 2014) $
  */
 package net.souchay.swift.net;
 
 import java.util.Properties;
+import net.souchay.swift.net.SwiftConstantsServer.URL_TYPE;
 
 /**
  * @copyright Pierre Souchay - 2013,2014
  * @author Pierre Souchay <pierre@souchay.net> $LastChangedBy: souchay $
- * @version $Revision: 3778 $
+ * @version $Revision: 3856 $
  * 
  */
 public interface SwiftCredentials {
@@ -91,4 +92,11 @@ public interface SwiftCredentials {
      * @return the overrided SwiftURL
      */
     public String getOverridedSwiftUrl();
+
+    /**
+     * Get the URL type
+     * 
+     * @return the URL type to use
+     */
+    public URL_TYPE getUrlType();
 }
