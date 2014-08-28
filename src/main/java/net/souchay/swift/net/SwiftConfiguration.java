@@ -1,6 +1,6 @@
 /**
  *
- * $LastChangedBy: souchay $ - $LastChangedDate: 2014-08-27 14:23:17 +0200 (Mer 27 aoû 2014) $
+ * $LastChangedBy: souchay $ - $LastChangedDate: 2014-08-28 11:48:42 +0200 (Jeu 28 aoû 2014) $
  */
 package net.souchay.swift.net;
 
@@ -13,7 +13,7 @@ import java.util.UUID;
 /**
  * @copyright Pierre Souchay - 2013,2014
  * @author Pierre Souchay <pierre@souchay.net> $LastChangedBy: souchay $
- * @version $Revision: 3856 $
+ * @version $Revision: 3857 $
  * 
  */
 public class SwiftConfiguration implements Comparable<SwiftConfiguration> {
@@ -114,7 +114,7 @@ public class SwiftConfiguration implements Comparable<SwiftConfiguration> {
      * @param tokenUrl the tokenUrl to set
      */
     public void setTokenUrl(URL tokenUrl) {
-        final String newValue = tokenUrl.toExternalForm();
+        final String newValue = tokenUrl == null ? null : tokenUrl.toExternalForm();
         final String oldValue = this.tokenUrlAsString;
         this.tokenUrlAsUrl = tokenUrl;
         this.tokenUrlAsString = newValue;

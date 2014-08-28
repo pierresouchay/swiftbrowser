@@ -1,5 +1,5 @@
 /**
- * $LastChangedBy: souchay $ - $LastChangedDate: 2014-08-27 14:23:17 +0200 (Mer 27 aoû 2014) $
+ * $LastChangedBy: souchay $ - $LastChangedDate: 2014-08-28 11:48:42 +0200 (Jeu 28 aoû 2014) $
  */
 package net.souchay.swift.gui;
 
@@ -157,7 +157,7 @@ import org.jdesktop.swingx.VerticalLayout;
  * 
  * @copyright Pierre Souchay - 2013, 2014
  * @author Pierre Souchay <pierre@souchay.net> $LastChangedBy: souchay $
- * @version $Revision: 3856 $
+ * @version $Revision: 3857 $
  */
 public class SwiftMain {
 
@@ -180,7 +180,7 @@ public class SwiftMain {
     /**
      * Public version
      */
-    public static String VERSION_SVN = "$Revision: 3856 $"; //$NON-NLS-1$
+    public static String VERSION_SVN = "$Revision: 3857 $"; //$NON-NLS-1$
 
     /**
      * Private Key regeneration
@@ -403,11 +403,21 @@ public class SwiftMain {
 
     private static void doConnect(SwiftConfiguration config) throws IOException {
         final boolean useHttp = true;
+        boolean hasSuccess = false;
+        List<IOException> errorsAtStartup = new LinkedList<IOException>();
         for (final SwiftConnections conn : SwiftConnectionBuilder.create(getUserAgent(), config)) {
             GlobalExecutorService.incrementReferences();
-            if (useHttp) {
-                conn.auth();
+            try {
+                if (useHttp) {
+                    conn.auth();
+                }
+            } catch (IOException err) {
+                errorsAtStartup.add(err);
+                LOG.log(Level.WARNING, "Failed to authenticate[" + err.getClass().getName() + "]:" + err.getMessage(), //$NON-NLS-1$//$NON-NLS-2$
+                        err);
+                continue;
             }
+            hasSuccess = true;
             final FileIfaceFactory fileFactory = new FileIfaceFactory(conn.getTenant());
             final ErrorsHandler errorsHandler = new ErrorsHandler();
             final ScheduledExecutorService executor = GlobalExecutorService.getExecutorService();
@@ -2160,6 +2170,17 @@ public class SwiftMain {
             }
             regenerateSecretKeyIfNeeded(conn, fileHandler);
 
+        }
+        if (!hasSuccess) {
+            if (errorsAtStartup.isEmpty()) {
+                JOptionPane.showMessageDialog(null, Messages.getString("errors.cannotLoginNoTenant")); //$NON-NLS-1$
+            } else {
+                // TODO: display nice error message
+                LOG.log(Level.SEVERE, "Could not login, number of error(s): " + errorsAtStartup.size()); //$NON-NLS-1$
+            }
+        } else {
+            if (!errorsAtStartup.isEmpty())
+                LOG.log(Level.WARNING, "We could login, but we had " + errorsAtStartup.size() + " error(s)."); //$NON-NLS-1$//$NON-NLS-2$
         }
     }
 

@@ -166,6 +166,7 @@ public class SwiftConnectionBuilder {
                     String line;
                     while ((line = rd.readLine()) != null) {
                         response.append(line).append('\n');
+                        // System.out.println(line);
                     }
                 } finally {
                     rd.close();
@@ -178,8 +179,18 @@ public class SwiftConnectionBuilder {
                 List<SwiftConnections> connections = new LinkedList<SwiftConnections>();
                 for (int i = 0; i < tenants.length(); i++) {
                     JSONObject t = tenants.getJSONObject(i);
+                    String tenantId = t.getString(SwiftConstantsServer.ID);
+                    boolean enabled = true;
+                    try {
+                        enabled = t.getBoolean("enabled"); //$NON-NLS-1$
+                    } catch (JSONException errIgnored) {
+
+                    }
+                    if (!enabled) {
+                        LOG.warning("tenant '" + tenantId + "' seems not enabled:\n" + t.toString(2)); //$NON-NLS-1$ //$NON-NLS-2$
+                    }
                     SwiftConfiguration cfg = new SwiftConfiguration(configuration.getCredential()
-                                                                                 .cloneForTenantId(t.getString(SwiftConstantsServer.ID)),
+                                                                                 .cloneForTenantId(tenantId),
                                                                     configuration.getTokenUrlAsUrl());
                     connections.add(addTenantFeatures(new SwiftConnections(userAgent, cfg)));
                 }

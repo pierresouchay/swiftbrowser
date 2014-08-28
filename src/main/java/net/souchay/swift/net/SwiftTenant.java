@@ -7,7 +7,7 @@ import java.io.Serializable;
  * 
  * @copyright Pierre Souchay - 2013,2014
  * @author Pierre Souchay <pierre@souchay.net> $LastChangedBy: souchay $
- * @version $Revision: 3830 $
+ * @version $Revision: 3857 $
  * 
  */
 public class SwiftTenant implements Serializable {
@@ -17,7 +17,18 @@ public class SwiftTenant implements Serializable {
      */
     private static final long serialVersionUID = 3838882725189288176L;
 
+    /**
+     * get the enabled
+     * 
+     * @return the enabled
+     */
+    public boolean isEnabled() {
+        return enabled;
+    }
+
     public final String id, name, publicUrl, description;
+
+    private final boolean enabled;
 
     private transient String token;
 
@@ -33,7 +44,7 @@ public class SwiftTenant implements Serializable {
      * @param description
      */
     public SwiftTenant(String id, String name, String publicUrl, String token, String description,
-            long expirationTimeInLocalTime) {
+            long expirationTimeInLocalTime, boolean enabled) {
         super();
         this.id = id;
         this.name = name;
@@ -41,6 +52,7 @@ public class SwiftTenant implements Serializable {
         this.token = token;
         this.description = description;
         this.expirationtime = System.currentTimeMillis() + EXPIRATION_DELAY;
+        this.enabled = enabled;
     }
 
     public final static long EXPIRATION_DELAY = 3600000; // One hour by default

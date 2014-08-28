@@ -1,6 +1,6 @@
 /**
  *
- * $LastChangedBy: souchay $ - $LastChangedDate: 2014-08-27 14:23:17 +0200 (Mer 27 aoû 2014) $
+ * $LastChangedBy: souchay $ - $LastChangedDate: 2014-08-28 11:48:42 +0200 (Jeu 28 aoû 2014) $
  */
 package net.souchay.swift.net;
 
@@ -64,7 +64,7 @@ import org.json.JSONObject;
 /**
  * @copyright Pierre Souchay - 2013,2014
  * @author Pierre Souchay <pierre@souchay.net> $LastChangedBy: souchay $
- * @version $Revision: 3856 $
+ * @version $Revision: 3857 $
  * 
  */
 public class SwiftConnections implements FsConnection {
@@ -636,12 +636,14 @@ public class SwiftConnections implements FsConnection {
         String id = null;
         String description = null;
         long expirationTimeForTenant = System.currentTimeMillis() + 3600000;
+        boolean enabled = true;
         try {
             JSONObject tenant = tokenObj.getJSONObject("tenant"); //$NON-NLS-1$
             if (tenant != null) {
                 id = tenant.getString(SwiftConstantsServer.ID);
                 name = tenant.getString(SwiftConstantsServer.NAME);
                 description = tenant.getString("description"); //$NON-NLS-1$
+                enabled = tenant.getBoolean("enabled");
             }
             DateFormat df = getDateFormatForMicroseconds();
             try {
@@ -667,6 +669,7 @@ public class SwiftConnections implements FsConnection {
         if (credentials != null) {
             urlType = credentials.getUrlType().getType();
         }
+
         if (credentials != null && urlType.equals(URL_TYPE.overrideUrl.getType())
             && credentials.getOverridedSwiftUrl() != null) {
             publicURLForSwift = credentials.getOverridedSwiftUrl();
@@ -699,7 +702,7 @@ public class SwiftConnections implements FsConnection {
                 }
             }
         }
-        return new SwiftTenant(id, name, publicURLForSwift, token, description, expirationTimeForTenant);
+        return new SwiftTenant(id, name, publicURLForSwift, token, description, expirationTimeForTenant, enabled);
     }
 
     @Override
