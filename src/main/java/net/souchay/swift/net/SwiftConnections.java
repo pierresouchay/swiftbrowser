@@ -329,15 +329,15 @@ public class SwiftConnections implements FsConnection {
      * Convenience method
      * 
      * @param method
-     * @param expires
+     * @param expiresInMs expiration time in milliseconds
      * @param f
      * @return
      * @throws MalformedURLException
      * @throws IOException
      */
-    public URI generateTempUrl(String method, long expires, VirtualFile f, boolean useSecondaryKey)
+    public URI generateTempUrlWithExpirationInMs(String method, long expiresInMs, VirtualFile f, boolean useSecondaryKey)
             throws MalformedURLException, IOException, InvalidKeyException {
-        return generateTempUrl(method, expires, f.getFile(), useSecondaryKey);
+        return generateTempUrlWithExpirationInMs(method, expiresInMs, f.getFile(), useSecondaryKey);
     }
 
     /**
@@ -352,12 +352,12 @@ public class SwiftConnections implements FsConnection {
      * @throws IOException
      * @throws InvalidKeyException if secret key has not been set
      */
-    public URI generateTempUrl(String method, long expires, FileIFace f, boolean useSecondaryKey)
+    public URI generateTempUrlWithExpirationInMs(String method, long expiresInMs, FileIFace f, boolean useSecondaryKey)
             throws MalformedURLException, IOException, InvalidKeyException {
-        return generateTempUrl(method,
-                               expires,
-                               f.getContainer() + FsConnection.URL_PATH_SEPARATOR + f.getName(),
-                               useSecondaryKey);
+        return generateTempUrlWithExpirationInMs(method,
+                                                 expiresInMs,
+                                                 f.getContainer() + FsConnection.URL_PATH_SEPARATOR + f.getName(),
+                                                 useSecondaryKey);
     }
 
     /**
@@ -368,17 +368,17 @@ public class SwiftConnections implements FsConnection {
      * @param path a temporary URL
      * @return
      */
-    public URI generateTempUrl(String method, long expires, String rpath, boolean useSecondaryKey)
-            throws MalformedURLException, IOException, InvalidKeyException {
+    public URI generateTempUrlWithExpirationInMs(String method, long expiresInMilliseconds, String rpath,
+            boolean useSecondaryKey) throws MalformedURLException, IOException, InvalidKeyException {
         URL u0 = new URL(getTenant().getPublicUrl());
         String path = u0.getPath() + URL_PATH_SEPARATOR + rpath;
         final StringBuilder sb = new StringBuilder();
-        sb.append(method).append('\n').append(expires).append('\n').append(path);
+        sb.append(method).append('\n').append(expiresInMilliseconds).append('\n').append(path);
         try {
             StringBuilder query = new StringBuilder().append("temp_url_sig=") //$NON-NLS-1$
                                                      .append(getSignature(sb.toString(), useSecondaryKey))
                                                      .append("&temp_url_expires=") //$NON-NLS-1$
-                                                     .append(expires);
+                                                     .append(expiresInMilliseconds);
             URI u = u0.toURI();
             return new URI(new URI(u.getScheme(),
                                    u.getUserInfo(),

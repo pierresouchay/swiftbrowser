@@ -267,7 +267,7 @@ public class RemoteFilesTransferable implements Transferable {
 
     @Override
     public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
-
+        final long expires = System.currentTimeMillis() + 3600000 * 3;
         if (net.souchay.swift.gui.dnd.Constants.virtualFilesList.match(flavor)) {
             ArrayList<String> theFiles = new ArrayList<String>(files.size());
             for (VirtualFile f : files) {
@@ -277,12 +277,11 @@ public class RemoteFilesTransferable implements Transferable {
             return dnd;
         } else if (net.souchay.swift.gui.dnd.Constants.uriList.match(flavor)) {
             StringBuilder sb = new StringBuilder();
-            final long expires = System.currentTimeMillis() + 3600000 * 3;
             for (VirtualFile f : files) {
                 if (sb.length() > 0)
                     sb.append('\n');
                 try {
-                    sb.append(connections.generateTempUrl("GET", //$NON-NLS-1$
+                    sb.append(connections.generateTempUrlWithExpirationInMs("GET", //$NON-NLS-1$
                                                           expires,
                                                           f.getFile(),
                                                           false));
@@ -302,18 +301,17 @@ public class RemoteFilesTransferable implements Transferable {
             if (Constants.urlFlavor.match(flavor)) {
                 final VirtualFile f = files.get(0);
                 try {
-                    return connections.generateTempUrl("GET", System.currentTimeMillis() + 3600000, f, false).toURL(); //$NON-NLS-1$
+                    return connections.generateTempUrlWithExpirationInMs("GET", expires, f, false).toURL(); //$NON-NLS-1$
                 } catch (InvalidKeyException err) {
                     return connections.getTenant().getPublicUrl() + f.getUnixPathWithContainer();
                 }
             } else if (DataFlavor.stringFlavor.match(flavor)) {
                 StringBuilder sb = new StringBuilder();
-                final long expires = System.currentTimeMillis() + 3600000 * 3;
                 for (VirtualFile f : files) {
                     if (sb.length() > 0)
                         sb.append('\n');
                     try {
-                        sb.append(connections.generateTempUrl("GET", //$NON-NLS-1$
+                        sb.append(connections.generateTempUrlWithExpirationInMs("GET", //$NON-NLS-1$
                                                               expires,
                                                               f.getFile().getContainer()
                                                                       + FsConnection.URL_PATH_SEPARATOR

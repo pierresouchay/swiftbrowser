@@ -574,7 +574,7 @@ public class SwiftMain {
                             VirtualFile f = (VirtualFile) table.getValueAt(row, 0);
                             if (f != null && !f.isDirectory()) {
                                 try {
-                                    URIOpen.browse(conn.generateTempUrl("GET", //$NON-NLS-1$
+                                    URIOpen.browse(conn.generateTempUrlWithExpirationInMs("GET", //$NON-NLS-1$
                                                                         expires,
                                                                         f.getFile().getContainer()
                                                                                 + FsConnection.URL_PATH_SEPARATOR

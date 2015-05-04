@@ -72,10 +72,10 @@ public class ShareAction extends VirtualFileAction {
         if (!f.isDirectory()) {
             try {
                 sb.append("\n - ") //$NON-NLS-1$
-                  .append(conn.generateTempUrl("GET", //$NON-NLS-1$ 
-                                               expires,
-                                               f,
-                                               useSecondaryKey).toURL().toExternalForm())
+                  .append(conn.generateTempUrlWithExpirationInMs("GET", //$NON-NLS-1$ 
+                                                                 expires,
+                                                                 f,
+                                                                 useSecondaryKey).toURL().toExternalForm())
                   //$NON-NLS-1$ //$NON-NLS-2$
                   .append('\n');
             } catch (IOException e1) {

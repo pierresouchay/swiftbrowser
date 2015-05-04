@@ -317,7 +317,7 @@ public class ShareUploadAction extends VirtualFileAction {
                                             StringBuilder sb = new StringBuilder();
                                             sb.append(Messages.getString("friends.main", SharingDuration.computeDurationAsString(now, duration))).append('\n'); //$NON-NLS-1$
                                             sb.append("\n ") //$NON-NLS-1$
-                                              .append(conn.generateTempUrl("GET", //$NON-NLS-1$ 
+                                              .append(conn.generateTempUrlWithExpirationInMs("GET", //$NON-NLS-1$ 
                                                                            expires,
                                                                            fullNameWithContainer,
                                                                            useSecondaryKey.isSelected())

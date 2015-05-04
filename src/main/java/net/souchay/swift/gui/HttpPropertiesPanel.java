@@ -500,7 +500,7 @@ public class HttpPropertiesPanel extends JPanel implements ListSelectionListener
                             public void actionPerformed(ActionEvent e) {
                                 try {
                                     if (!f.isDirectory()) {
-                                        URIOpen.browse(conn.generateTempUrl("GET", //$NON-NLS-1$
+                                        URIOpen.browse(conn.generateTempUrlWithExpirationInMs("GET", //$NON-NLS-1$
                                                                             System.currentTimeMillis() + 180000,
                                                                             f.getUnixPathWithContainer(),
                                                                             false));
