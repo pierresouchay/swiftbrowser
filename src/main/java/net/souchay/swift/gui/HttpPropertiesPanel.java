@@ -53,7 +53,7 @@ import org.json.JSONException;
 /**
  * 
  * @author Pierre Souchay <pierre@souchay.net> (last changed by $LastChangedBy: souchay $)
- * @version $Revision: 3842 $
+ * @version $Revision: 3882 $
  * 
  */
 public class HttpPropertiesPanel extends JPanel implements ListSelectionListener {

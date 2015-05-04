@@ -21,7 +21,7 @@ import net.souchay.utilities.URLParamEncoder;
 /**
  * 
  * @author Pierre Souchay <pierre@souchay.net> (last changed by $LastChangedBy: souchay $)
- * @version $Revision: 3830 $
+ * @version $Revision: 3882 $
  * 
  */
 public class ShareAction extends VirtualFileAction {

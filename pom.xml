@@ -5,7 +5,7 @@
 	<groupId>net.souchay.swift</groupId>
 	<artifactId>swift-browser</artifactId>
 	<packaging>jar</packaging>
-	<version>20140828</version>
+	<version>20150504</version>
 	<name>Swift Browser</name>
 	<description>A OpenStack Swift Browser</description>
 	<properties>
