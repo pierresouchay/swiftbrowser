@@ -569,7 +569,8 @@ public class SwiftMain {
 
                     int srow = table.getSelectedRow();
                     if (srow > 0) {
-                        final long expires = System.currentTimeMillis() + 3600000 * 24;
+                        // Expiration time will work for 2 hours
+                        final long expires = System.currentTimeMillis() + 7200000;
                         for (int row : table.getSelectedRows()) {
                             VirtualFile f = (VirtualFile) table.getValueAt(row, 0);
                             if (f != null && !f.isDirectory()) {

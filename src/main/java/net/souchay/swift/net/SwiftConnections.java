@@ -364,21 +364,22 @@ public class SwiftConnections implements FsConnection {
      * Generates a temporary URL
      * 
      * @param method
-     * @param expires
+     * @param expiresInMs expiration time in milliseconds
      * @param path a temporary URL
      * @return
      */
-    public URI generateTempUrlWithExpirationInMs(String method, long expiresInMilliseconds, String rpath,
+    public URI generateTempUrlWithExpirationInMs(String method, final long expiresInMs, String rpath,
             boolean useSecondaryKey) throws MalformedURLException, IOException, InvalidKeyException {
         URL u0 = new URL(getTenant().getPublicUrl());
         String path = u0.getPath() + URL_PATH_SEPARATOR + rpath;
         final StringBuilder sb = new StringBuilder();
-        sb.append(method).append('\n').append(expiresInMilliseconds).append('\n').append(path);
+        final long expires = expiresInMs / 1000;
+        sb.append(method).append('\n').append(expires).append('\n').append(path);
         try {
             StringBuilder query = new StringBuilder().append("temp_url_sig=") //$NON-NLS-1$
                                                      .append(getSignature(sb.toString(), useSecondaryKey))
                                                      .append("&temp_url_expires=") //$NON-NLS-1$
-                                                     .append(expiresInMilliseconds);
+                                                     .append(expires);
             URI u = u0.toURI();
             return new URI(new URI(u.getScheme(),
                                    u.getUserInfo(),
