@@ -417,7 +417,7 @@ public class SwiftConnections implements FsConnection {
     }
 
     public String generateSignatureForPostUpload(String path, String redirectUrl, long max_file_size,
-            int max_file_count, long expires, boolean useSecondayKey) throws InvalidKeyException {
+            int max_file_count, long expiresInMs, boolean useSecondayKey) throws InvalidKeyException {
         StringBuilder sb = new StringBuilder();
         sb.append(path)
           .append('\n')
@@ -427,7 +427,7 @@ public class SwiftConnections implements FsConnection {
           .append('\n')
           .append(max_file_count)
           .append('\n')
-          .append(expires);
+          .append(expiresInMs / 1000);
         return getSignature(sb.toString(), useSecondayKey);
     }
 

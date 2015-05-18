@@ -68,7 +68,7 @@ public class ShareUploadAction extends VirtualFileAction {
      * @throws InvalidKeyException
      */
     private final static File generateUploadFile(SwiftConnections conn, VirtualFile file, final long max_file_size,
-            final int max_file_count, long expires, String path, String signature) throws IOException,
+            final int max_file_count, long expiresInMs, String path, String signature) throws IOException,
             InvalidKeyException {
         File temp = File.createTempFile("upload_", ".html");//$NON-NLS-1$ //$NON-NLS-2$
         final Charset UTF_8 = Charset.forName("UTF-8");//$NON-NLS-1$
@@ -93,7 +93,7 @@ public class ShareUploadAction extends VirtualFileAction {
         data = data.replaceAll("___max_file_size___", String.valueOf(max_file_size));//$NON-NLS-1$
         data = data.replaceAll("___max_file_count___", String.valueOf(max_file_count));//$NON-NLS-1$
         data = data.replaceAll("___signature___", String.valueOf(signature));//$NON-NLS-1$
-        data = data.replaceAll("___expires___", String.valueOf(expires));//$NON-NLS-1$
+        data = data.replaceAll("___expires___", String.valueOf(expiresInMs / 1000));//$NON-NLS-1$
         if (signature == null) {
             data = data.replaceAll("___signature_field___", //$NON-NLS-1$
                                    "<label id=\"passwordLabel\" for=\"signature\">Password:</label><input type=\"password\" name=\"signature\" id=\"signature\" />"); //$NON-NLS-1$
@@ -268,7 +268,7 @@ public class ShareUploadAction extends VirtualFileAction {
                     if (maxSizeOfUploadDefault < 1)
                         maxSizeOfUploadDefault = 1L;
                 }
-                final long expires = now + duration.longValue();
+                final long expiresInMs = now + duration.longValue();
                 // StringBuilder sb = new StringBuilder();
 
                 Thread shareThread = new Thread("shareThread") { //$NON-NLS-1$
@@ -282,23 +282,23 @@ public class ShareUploadAction extends VirtualFileAction {
                             long max_file_size = maxSizeOfUploadDefault * 1024 * 1024;
                             int max_file_count = numberOfFilesMaxDefault.intValue();
                             final String signature = conn.generateSignatureForPostUpload(path,
-                                                                                         "", max_file_size, max_file_count, expires, useSecondaryKey.isSelected()); //$NON-NLS-1$
+                                                                                         "", max_file_size, max_file_count, expiresInMs, useSecondaryKey.isSelected()); //$NON-NLS-1$
 
                             File tmp = generateUploadFile(conn,
                                                           file,
                                                           max_file_size,
                                                           max_file_count,
-                                                          expires,
+                                                          expiresInMs,
                                                           path,
                                                           protectedByPassword.isSelected() ? null : signature);
                             FileInputStream in = null;
                             try {
                                 in = new FileInputStream(tmp);
                                 HashMap<String, String> headers = new HashMap<String, String>();
-                                headers.put("X-Delete-At", String.valueOf(expires)); //$NON-NLS-1$
+                                headers.put("X-Delete-At", String.valueOf(expiresInMs / 1000)); //$NON-NLS-1$
                                 headers.put("Content-Type", "text/html; charset=UTF-8"); //$NON-NLS-1$//$NON-NLS-2$
                                 headers.put("Content-Disposition", "inline"); //$NON-NLS-1$//$NON-NLS-2$
-                                String uploadFileName = "upload_" + expires //$NON-NLS-1$
+                                String uploadFileName = "upload_" + (expiresInMs / 1000) //$NON-NLS-1$
                                                         + ".html"; //$NON-NLS-1$
                                 final String fullName = file.getUnixPathWithoutContainer()
                                                         + VirtualFile.VIRTUAL_FILE_SEPARATOR + uploadFileName;
@@ -313,14 +313,14 @@ public class ShareUploadAction extends VirtualFileAction {
                                     public void run() {
                                         refreshAllAction.actionPerformed(null);
                                         try {
-                                            final long expires = System.currentTimeMillis() + 3600000 * 24 * 7;
+                                            final long expiresInMs = System.currentTimeMillis() + 3600000 * 24 * 7;
                                             StringBuilder sb = new StringBuilder();
                                             sb.append(Messages.getString("friends.main", SharingDuration.computeDurationAsString(now, duration))).append('\n'); //$NON-NLS-1$
                                             sb.append("\n ") //$NON-NLS-1$
                                               .append(conn.generateTempUrlWithExpirationInMs("GET", //$NON-NLS-1$ 
-                                                                           expires,
-                                                                           fullNameWithContainer,
-                                                                           useSecondaryKey.isSelected())
+                                                                                             expiresInMs,
+                                                                                             fullNameWithContainer,
+                                                                                             useSecondaryKey.isSelected())
                                                           .toURL()
                                                           .toExternalForm())
                                               //$NON-NLS-1$ //$NON-NLS-2$
