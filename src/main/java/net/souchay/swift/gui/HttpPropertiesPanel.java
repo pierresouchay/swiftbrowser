@@ -485,9 +485,11 @@ public class HttpPropertiesPanel extends JPanel implements ListSelectionListener
                         final String urlTxt = sb.toString();
                         final URL url = new URL(urlTxt);
                         {
-                            String token = conn.getTenant().getToken();
-                            curlCommand = "curl -XGET -H 'X-Auth-Token: " + token + "' '" //$NON-NLS-1$ //$NON-NLS-2$
-                                          + url.toExternalForm() + "'"; //$NON-NLS-1$
+                            final String token = conn.getTenant().getToken();
+                            final String urlAsText = url.toExternalForm() ;
+                            // We add -g since it avoid curl to crash if URL contains patterns such as [
+                            curlCommand = "curl -g -H 'X-Auth-Token: " + token + "' '" //$NON-NLS-1$ //$NON-NLS-2$
+                                          + urlAsText + "'"; //$NON-NLS-1$
                         }
                         link.setAction(new AbstractAction(url.toExternalForm()) {
 
