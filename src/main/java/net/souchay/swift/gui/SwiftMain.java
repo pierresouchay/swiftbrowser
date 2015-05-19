@@ -568,7 +568,7 @@ public class SwiftMain {
                 public void actionPerformed(ActionEvent e) {
 
                     int srow = table.getSelectedRow();
-                    if (srow > 0) {
+                    if (srow >= 0) {
                         // Expiration time will work for 2 hours
                         final long expires = System.currentTimeMillis() + 7200000;
                         for (int row : table.getSelectedRows()) {

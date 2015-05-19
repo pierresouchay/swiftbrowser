@@ -170,7 +170,7 @@ public class ShareUploadAction extends VirtualFileAction {
     public void actionPerformed(ActionEvent e) {
         try {
             int srow = table.getSelectedRow();
-            if (srow > 0) {
+            if (srow >= 0) {
                 VirtualFile _file = (VirtualFile) table.getValueAt(srow, 0);
                 if (_file instanceof ContainerVirtualFile) {
                     Vector<String> files = new Vector<String>();

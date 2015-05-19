@@ -70,7 +70,7 @@ public class DeleteVirtualFileAction extends VirtualFileAction {
     public void actionPerformed(ActionEvent e) {
 
         int srow = table.getSelectedRow();
-        if (srow > 0) {
+        if (srow >= 0) {
             final List<ContainerVirtualFile> containersToDelete = new LinkedList<ContainerVirtualFile>();
             final Set<VirtualFile> files = new HashSet<VirtualFile>();
             for (int row : table.getSelectedRows()) {

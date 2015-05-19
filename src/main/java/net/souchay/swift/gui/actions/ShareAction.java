@@ -94,7 +94,7 @@ public class ShareAction extends VirtualFileAction {
     public void actionPerformed(ActionEvent e) {
         try {
             int srow = table.getSelectedRow();
-            if (srow > 0) {
+            if (srow >= 0) {
                 final long now = System.currentTimeMillis();
                 Long duration = SharingDuration.getExpirationDate(table,
                                                                   SharingDuration.MAIL_SHARING_DEFAULT,

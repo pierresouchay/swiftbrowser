@@ -69,7 +69,7 @@ public class RenameVirtualFileAction extends VirtualFileAction {
     public void actionPerformed(ActionEvent e) {
 
         int srow = table.getSelectedRow();
-        if (srow > 0) {
+        if (srow >= 0) {
             final VirtualFile fx = (VirtualFile) table.getValueAt(srow, 0);
             final String newName = (String) JOptionPane.showInputDialog(null,
                                                                         Messages.getString("renameFile.message", fx.getName()), //$NON-NLS-1$
