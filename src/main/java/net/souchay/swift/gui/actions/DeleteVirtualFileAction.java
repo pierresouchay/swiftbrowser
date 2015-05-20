@@ -27,7 +27,7 @@ import net.souchay.swift.net.SwiftConnections;
 /**
  * 
  * @author Pierre Souchay <pierre@souchay.net> (last changed by $LastChangedBy: souchay $)
- * @version $Revision: 3830 $
+ * @version $Revision: 3922 $
  * 
  */
 public class DeleteVirtualFileAction extends VirtualFileAction {

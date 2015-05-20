@@ -1,6 +1,6 @@
 /**
  *
- * $LastChangedBy: souchay $ - $LastChangedDate: 2014-05-23 17:18:40 +0200 (Ven 23 mai 2014) $
+ * $LastChangedBy: souchay $ - $LastChangedDate: 2015-05-20 02:51:10 +0200 (Mer, 20 mai 2015) $
  */
 package net.souchay.swift.net;
 
@@ -16,7 +16,7 @@ import net.souchay.swift.gui.ObjectIFace;
 /**
  * @copyright Pierre Souchay - 2013,2014
  * @author Pierre Souchay <pierre@souchay.net> $LastChangedBy: souchay $
- * @version $Revision: 3810 $
+ * @version $Revision: 3922 $
  * 
  */
 public interface FsConnection {
@@ -48,7 +48,7 @@ public interface FsConnection {
      * 
      * @copyright Pierre Souchay - 2013,2014
      * @author Pierre Souchay <pierre@souchay.net> $LastChangedBy: souchay $
-     * @version $Revision: 3810 $
+     * @version $Revision: 3922 $
      * 
      */
     public interface OnFileDownloaded {

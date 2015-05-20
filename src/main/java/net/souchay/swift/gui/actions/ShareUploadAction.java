@@ -1,5 +1,5 @@
 /**
- * $LastChangedBy: souchay $ - $LastChangedDate: 2015-05-19 02:02:23 +0200 (Mar, 19 mai 2015) $
+ * $LastChangedBy: souchay $ - $LastChangedDate: 2015-05-20 02:51:10 +0200 (Mer, 20 mai 2015) $
  */
 package net.souchay.swift.gui.actions;
 
@@ -50,7 +50,7 @@ import org.jdesktop.swingx.VerticalLayout;
 
 /**
  * @author Pierre Souchay <pierre@souchay.net> (last changed by $LastChangedBy: souchay $)
- * @version $Revision: 3920 $
+ * @version $Revision: 3922 $
  * 
  */
 public class ShareUploadAction extends VirtualFileAction {

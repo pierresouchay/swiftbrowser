@@ -24,7 +24,7 @@ import net.souchay.swift.net.SwiftConnections;
 /**
  * 
  * @author Pierre Souchay <pierre@souchay.net> (last changed by $LastChangedBy: souchay $)
- * @version $Revision: 3840 $
+ * @version $Revision: 3922 $
  * 
  */
 public class RenameVirtualFileAction extends VirtualFileAction {
