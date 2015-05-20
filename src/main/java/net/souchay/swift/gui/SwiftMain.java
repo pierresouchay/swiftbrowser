@@ -111,6 +111,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
+import net.souchay.swift.downloads.Md5Comparator;
 import net.souchay.swift.gui.ContainerIFace.FileIFace;
 import net.souchay.swift.gui.SwiftToVirtualFiles.OnResult;
 import net.souchay.swift.gui.actions.CheckUpdatesAction;
@@ -129,6 +130,7 @@ import net.souchay.swift.gui.dnd.GlobalExecutorService;
 import net.souchay.swift.gui.dnd.JTransferableTree;
 import net.souchay.swift.net.DefaultSwiftConnectionResult;
 import net.souchay.swift.net.FsConnection;
+import net.souchay.swift.net.FsConnection.NoNeedToDownloadException;
 import net.souchay.swift.net.FsConnection.OnFileDownloaded;
 import net.souchay.swift.net.SwiftConfiguration;
 import net.souchay.swift.net.SwiftConnectionBuilder;
@@ -139,6 +141,7 @@ import net.souchay.swift.net.SwiftTenant;
 import net.souchay.utilities.Application;
 import net.souchay.utilities.Application.ApplicationConfiguration;
 import net.souchay.utilities.Application.MacOSXHandle;
+import net.souchay.utilities.TempUtils;
 import net.souchay.utilities.URIOpen;
 import org.jdesktop.swingx.HorizontalLayout;
 import org.jdesktop.swingx.JXCollapsiblePane;
@@ -576,11 +579,12 @@ public class SwiftMain {
                             if (f != null && !f.isDirectory()) {
                                 try {
                                     URIOpen.browse(conn.generateTempUrlWithExpirationInMs("GET", //$NON-NLS-1$
-                                                                        expires,
-                                                                        f.getFile().getContainer()
-                                                                                + FsConnection.URL_PATH_SEPARATOR
-                                                                                + f.getFile().getName(),
-                                                                        false));
+                                                                                          expires,
+                                                                                          f.getFile().getContainer()
+                                                                                                  + FsConnection.URL_PATH_SEPARATOR
+                                                                                                  + f.getFile()
+                                                                                                     .getName(),
+                                                                                          false));
                                 } catch (IOException e1) {
                                     LOG.log(Level.WARNING, "Cannot open temporary URL: " + e1.getMessage(), e1); //$NON-NLS-1$
                                 } catch (InvalidKeyException err) {
@@ -675,16 +679,29 @@ public class SwiftMain {
                                             }
 
                                             @Override
-                                            public File onStartDownload(String container, String path, int totalLengh)
-                                                    throws IOException {
+                                            public File onStartDownload(String container, String path, int totalLengh,
+                                                    long lastModified, String eTag) throws IOException,
+                                                    NoNeedToDownloadException {
+                                                File tempDir = TempUtils.getTempDir();
                                                 String ext = ".dat"; //$NON-NLS-1$
                                                 if (path != null && !path.isEmpty()) {
                                                     int idx = path.lastIndexOf('.');
                                                     if (idx > 0)
                                                         ext = path.substring(idx);
                                                 }
-                                                File f = File.createTempFile("temp_", ext); //$NON-NLS-1$
-                                                return f;
+                                                File f;
+                                                if (eTag != null && !eTag.isEmpty()) {
+                                                    f = new File(tempDir, eTag + ext);
+                                                    Md5Comparator md5 = Md5Comparator.getInstance();
+                                                    try {
+                                                        md5.cancelIfDownloadCanBeSkipped(f, totalLengh, eTag);
+                                                    } finally {
+                                                        md5.close();
+                                                    }
+                                                    return f;
+                                                } else {
+                                                    return File.createTempFile("temp_", ext); //$NON-NLS-1$
+                                                }
                                             }
 
                                         },

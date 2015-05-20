@@ -14,9 +14,11 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
+import net.souchay.swift.downloads.Md5Comparator;
 import net.souchay.swift.gui.VirtualFile;
 import net.souchay.swift.net.DefaultSwiftConnectionResult;
 import net.souchay.swift.net.FsConnection;
+import net.souchay.swift.net.FsConnection.NoNeedToDownloadException;
 import net.souchay.swift.net.SwiftConnections;
 
 public class RemoteFilesTransferable implements Transferable {
@@ -282,9 +284,9 @@ public class RemoteFilesTransferable implements Transferable {
                     sb.append('\n');
                 try {
                     sb.append(connections.generateTempUrlWithExpirationInMs("GET", //$NON-NLS-1$
-                                                          expires,
-                                                          f.getFile(),
-                                                          false));
+                                                                            expires,
+                                                                            f.getFile(),
+                                                                            false));
                 } catch (InvalidKeyException err) {
                     sb.append(connections.getTenant().getPublicUrl() + f.getUnixPathWithContainer());
                 }
@@ -312,11 +314,12 @@ public class RemoteFilesTransferable implements Transferable {
                         sb.append('\n');
                     try {
                         sb.append(connections.generateTempUrlWithExpirationInMs("GET", //$NON-NLS-1$
-                                                              expires,
-                                                              f.getFile().getContainer()
-                                                                      + FsConnection.URL_PATH_SEPARATOR
-                                                                      + f.getFile().getName(),
-                                                              false).toASCIIString());
+                                                                                expires,
+                                                                                f.getFile().getContainer()
+                                                                                        + FsConnection.URL_PATH_SEPARATOR
+                                                                                        + f.getFile().getName(),
+                                                                                false)
+                                             .toASCIIString());
                     } catch (InvalidKeyException err) {
                         sb.append(connections.getTenant().getPublicUrl() + f.getUnixPathWithContainer());
                     }
@@ -407,8 +410,15 @@ public class RemoteFilesTransferable implements Transferable {
                                         }
 
                                         @Override
-                                        public File onStartDownload(String container, String path, int totalLengh)
-                                                throws IOException {
+                                        public File onStartDownload(String container, String path, int totalLengh,
+                                                long lastModified, String eTag) throws IOException,
+                                                NoNeedToDownloadException {
+                                            final Md5Comparator md5 = Md5Comparator.getInstance();
+                                            try {
+                                                md5.cancelIfDownloadCanBeSkipped(file, totalLengh, eTag);
+                                            } finally {
+                                                md5.close();
+                                            }
                                             return file;
                                         }
                                     }, -1);

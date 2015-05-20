@@ -24,10 +24,12 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import net.souchay.swift.downloads.Md5Comparator;
 import net.souchay.swift.gui.ContainerIFace.FileIFace;
 import net.souchay.swift.gui.FileImport.FileOrURLListener;
 import net.souchay.swift.gui.table.HeaderRowRenderer;
 import net.souchay.swift.net.FsConnection;
+import net.souchay.swift.net.FsConnection.NoNeedToDownloadException;
 import net.souchay.swift.net.HttpDateParser;
 import net.souchay.swift.net.SwiftConnectionResultHandler;
 import net.souchay.swift.net.SwiftConnections;
@@ -95,8 +97,14 @@ public class SwiftConnectionsDownload implements FileOrURLListener {
                              new FsConnection.OnFileDownloaded() {
 
                                  @Override
-                                 public File onStartDownload(String container, String path, int totalLengh)
-                                         throws IOException {
+                                 public File onStartDownload(String container, String path, int totalLengh,
+                                         long lastModified, String eTag) throws IOException, NoNeedToDownloadException {
+                                     final Md5Comparator md5 = Md5Comparator.getInstance();
+                                     try {
+                                         md5.cancelIfDownloadCanBeSkipped(toSaveAs, totalLengh, eTag);
+                                     } finally {
+                                         md5.close();
+                                     }
                                      return toSaveAs;
                                  }
 

@@ -22,6 +22,28 @@ import net.souchay.swift.gui.ObjectIFace;
 public interface FsConnection {
 
     /**
+     * No need to download the given file
+     */
+    public final static class NoNeedToDownloadException extends Exception {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 3959808646783876508L;
+
+        public NoNeedToDownloadException(File f) {
+            super();
+            this.file = f;
+        }
+
+        private final File file;
+
+        public File getFile() {
+            return file;
+        }
+    };
+
+    /**
      * Interface to implement to save files
      * 
      * @copyright Pierre Souchay - 2013,2014
@@ -31,7 +53,8 @@ public interface FsConnection {
      */
     public interface OnFileDownloaded {
 
-        public File onStartDownload(String container, String path, int totalLengh) throws IOException;
+        public File onStartDownload(String container, String path, int totalLengh, long lastModified, String eTag)
+                throws IOException, NoNeedToDownloadException;
 
         /**
          * Called when file has been downloaded...
