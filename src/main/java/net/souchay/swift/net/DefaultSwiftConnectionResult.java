@@ -1,6 +1,6 @@
 /**
  *
- * $LastChangedBy: souchay $ - $LastChangedDate: 2015-05-20 23:58:46 -0700 (Mer, 20 mai 2015) $
+ * $LastChangedBy: souchay $ - $LastChangedDate: 2015-05-21 11:35:47 -0700 (Jeu, 21 mai 2015) $
  */
 package net.souchay.swift.net;
 
@@ -24,7 +24,7 @@ import net.souchay.utilities.Application;
 /**
  * @copyright Pierre Souchay - 2013,2014
  * @author Pierre Souchay <pierre@souchay.net> $LastChangedBy: souchay $
- * @version $Revision: 3924 $
+ * @version $Revision: 3925 $
  * 
  */
 public class DefaultSwiftConnectionResult implements SwiftConnectionResultHandler, HttpConnectionListener {

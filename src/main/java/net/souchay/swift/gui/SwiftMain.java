@@ -1,5 +1,5 @@
 /**
- * $LastChangedBy: souchay $ - $LastChangedDate: 2015-05-20 02:51:10 +0200 (Mer, 20 mai 2015) $
+ * $LastChangedBy: souchay $ - $LastChangedDate: 2015-05-21 11:35:47 -0700 (Jeu, 21 mai 2015) $
  */
 package net.souchay.swift.gui;
 
@@ -161,7 +161,7 @@ import org.jdesktop.swingx.VerticalLayout;
  * 
  * @copyright Pierre Souchay - 2013, 2014
  * @author Pierre Souchay <pierre@souchay.net> $LastChangedBy: souchay $
- * @version $Revision: 3922 $
+ * @version $Revision: 3925 $
  */
 public class SwiftMain {
 
@@ -184,7 +184,7 @@ public class SwiftMain {
     /**
      * Public version
      */
-    public static String VERSION_SVN = "$Revision: 3922 $"; //$NON-NLS-1$
+    public static String VERSION_SVN = "$Revision: 3925 $"; //$NON-NLS-1$
 
     /**
      * Private Key regeneration
