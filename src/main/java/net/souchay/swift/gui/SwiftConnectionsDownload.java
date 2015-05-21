@@ -66,6 +66,8 @@ public class SwiftConnectionsDownload implements FileOrURLListener {
 
     private final SwiftConnectionResultHandler fileHandler;
 
+    // private volatile Boolean overwriteFileWhenMoreRecent = null;
+
     /**
      * Save a Virtual File to local file system
      * 
@@ -80,13 +82,19 @@ public class SwiftConnectionsDownload implements FileOrURLListener {
             if (!toSaveAs.exists())
                 toSaveAs.mkdirs();
         } else {
-            final long lastModified;
-            if (toSaveAs.exists()) {
-                long lm = toSaveAs.lastModified();
-                lastModified = lm;
-            } else {
-                lastModified = -1;
-            }
+            // final long lastModified;
+            // final String md5;
+            // if (toSaveAs.exists()) {
+            // long lm = toSaveAs.lastModified();
+            // lastModified = -1;
+            // final Md5Comparator md5c = Md5Comparator.getInstance();
+            // md5 = md5c.computeMd5(toSaveAs);
+            // md5c.close();
+            // // FIXME: don't use lastModified, use the MD5 instead
+            // } else {
+            // md5 = "";
+            // lastModified = -1;
+            // }
             result.add(executor.submit(new Callable<File>() {
 
                 @Override
@@ -105,6 +113,28 @@ public class SwiftConnectionsDownload implements FileOrURLListener {
                                      } finally {
                                          md5.close();
                                      }
+                                     if (toSaveAs.lastModified() > lastModified) {
+                                         // if (overwriteFileWhenMoreRecent != null) {
+                                         // if (Boolean.FALSE.equals(overwriteFileWhenMoreRecent)) {
+                                         // throw new NoNeedToDownloadException(toSaveAs);
+                                         // }
+                                         // }
+                                         final int response = JOptionPane.showConfirmDialog(null,
+                                                                                            Messages.getString("overrideFileQuestion", //$NON-NLS-1$
+                                                                                                               toSaveAs.getAbsolutePath()),
+                                                                                            Messages.getString("overrideFileQuestionTitle"), //$NON-NLS-1$
+                                                                                            JOptionPane.YES_NO_OPTION);
+                                         if (response == JOptionPane.YES_OPTION) {
+                                             // overwriteFileWhenMoreRecent = Boolean.TRUE;
+                                             // } else if (response == JOptionPane.NO_OPTION) {
+                                             // // We won't ask question later
+                                             // // overwriteFileWhenMoreRecent = Boolean.FALSE;
+                                             // throw new NoNeedToDownloadException(toSaveAs);
+                                         } else {
+                                             throw new NoNeedToDownloadException(toSaveAs);
+                                         }
+
+                                     }
                                      return toSaveAs;
                                  }
 
@@ -115,7 +145,8 @@ public class SwiftConnectionsDownload implements FileOrURLListener {
                                      else
                                          toSaveAs.delete();
                                  }
-                             }, lastModified);
+                             },
+                             -1);
                     return toSaveAs;
                 }
 

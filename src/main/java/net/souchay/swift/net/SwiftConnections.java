@@ -644,7 +644,7 @@ public class SwiftConnections implements FsConnection {
                 id = tenant.getString(SwiftConstantsServer.ID);
                 name = tenant.getString(SwiftConstantsServer.NAME);
                 description = tenant.getString("description"); //$NON-NLS-1$
-                enabled = tenant.getBoolean("enabled");
+                enabled = tenant.getBoolean("enabled"); //$NON-NLS-1$
             }
             DateFormat df = getDateFormatForMicroseconds();
             try {
@@ -975,7 +975,9 @@ public class SwiftConnections implements FsConnection {
                 LOG.fine(responseCode + ": " + responseMessage + "\t; content-type: " + contentType + " -\t" + txtUrl); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             final long totalBytes = getContentLength(connection);
             handler.onProgress(id, msg, start, 0, totalBytes);
-            handler.onFileContent(id, handler, connection, connection.getInputStream(), container, file, onDownload);
+            if (responseCode == 200) {
+                handler.onFileContent(id, handler, connection, connection.getInputStream(), container, file, onDownload);
+            }
             b.onSuccess(connection.getResponseCode(), connection.getResponseMessage(), totalBytes);
             return connection.getHeaderFields();
         } catch (IOException err) {

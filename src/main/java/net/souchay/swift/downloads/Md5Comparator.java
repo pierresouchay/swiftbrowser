@@ -50,7 +50,7 @@ public class Md5Comparator implements CompareStrategy, Closeable {
      * @return empty string is file does not exists or cannot be read
      */
     public final String computeMd5(final File file) {
-        if (!file.exists() || !file.canRead() || !file.isAbsolute()) {
+        if (!file.exists() || !file.canRead() || file.isDirectory()) {
             return ""; //$NON-NLS-1$
         }
         final MessageDigest md = digest.get();

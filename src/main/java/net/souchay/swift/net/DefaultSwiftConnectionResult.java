@@ -105,7 +105,7 @@ public class DefaultSwiftConnectionResult implements SwiftConnectionResultHandle
             f = onDownload.onStartDownload(container, path, len, connection.getLastModified(), eTag);
             outFile = new BufferedOutputStream(new FileOutputStream(f));
             in = new BufferedInputStream(out);
-            byte data[] = new byte[1024];
+            final byte data[] = new byte[1024];
             int flen = in.read(data);
             long fullLen = 0;
             String msg = Messages.getString("operations.receiving", connection.getURL().toExternalForm()); //$NON-NLS-1$
