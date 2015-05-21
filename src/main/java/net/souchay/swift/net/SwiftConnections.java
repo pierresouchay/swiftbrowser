@@ -1,6 +1,6 @@
 /**
  *
- * $LastChangedBy: souchay $ - $LastChangedDate: 2015-05-19 02:02:23 +0200 (Mar, 19 mai 2015) $
+ * $LastChangedBy: souchay $ - $LastChangedDate: 2015-05-20 23:58:46 -0700 (Mer, 20 mai 2015) $
  */
 package net.souchay.swift.net;
 
@@ -64,7 +64,7 @@ import org.json.JSONObject;
 /**
  * @copyright Pierre Souchay - 2013,2014
  * @author Pierre Souchay <pierre@souchay.net> $LastChangedBy: souchay $
- * @version $Revision: 3920 $
+ * @version $Revision: 3924 $
  * 
  */
 public class SwiftConnections implements FsConnection {
