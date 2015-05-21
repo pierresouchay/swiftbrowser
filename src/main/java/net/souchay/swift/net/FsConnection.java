@@ -43,6 +43,10 @@ public interface FsConnection {
         }
     };
 
+    public static enum DownloadStatus {
+        ERROR, SUCESS, SKIPPED
+    };
+
     /**
      * Interface to implement to save files
      * 
@@ -53,6 +57,18 @@ public interface FsConnection {
      */
     public interface OnFileDownloaded {
 
+        /**
+         * Called to figure out what will be the target file
+         * 
+         * @param container
+         * @param path
+         * @param totalLengh
+         * @param lastModified
+         * @param eTag
+         * @return
+         * @throws IOException
+         * @throws NoNeedToDownloadException if file must not be saved
+         */
         public File onStartDownload(String container, String path, int totalLengh, long lastModified, String eTag)
                 throws IOException, NoNeedToDownloadException;
 
@@ -62,7 +78,7 @@ public interface FsConnection {
          * @param f
          * @param success true if download successful
          */
-        public void onDownload(File f, String container, String path, boolean success);
+        public void onDownload(File f, String container, String path, DownloadStatus success);
     }
 
     public File getTemporaryDirectory() throws IOException;

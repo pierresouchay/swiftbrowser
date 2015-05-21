@@ -18,6 +18,7 @@ import net.souchay.swift.downloads.Md5Comparator;
 import net.souchay.swift.gui.VirtualFile;
 import net.souchay.swift.net.DefaultSwiftConnectionResult;
 import net.souchay.swift.net.FsConnection;
+import net.souchay.swift.net.FsConnection.DownloadStatus;
 import net.souchay.swift.net.FsConnection.NoNeedToDownloadException;
 import net.souchay.swift.net.SwiftConnections;
 
@@ -401,11 +402,13 @@ public class RemoteFilesTransferable implements Transferable {
                                     new FsConnection.OnFileDownloaded() {
 
                                         @Override
-                                        public void onDownload(File f, String container, String path, boolean success) {
-                                            if (success) {
+                                        public void onDownload(File f, String container, String path,
+                                                DownloadStatus success) {
+                                            if (DownloadStatus.SUCESS.equals(success)) {
                                                 file.setLastModified(vf.getLastModified());
                                             } else {
-                                                System.err.println("Failed for " + container + "/" + path); //$NON-NLS-1$//$NON-NLS-2$
+                                                if (!DownloadStatus.SKIPPED.equals(success))
+                                                    System.err.println("Failed for " + container + "/" + path); //$NON-NLS-1$//$NON-NLS-2$
                                             }
                                         }
 

@@ -130,6 +130,7 @@ import net.souchay.swift.gui.dnd.GlobalExecutorService;
 import net.souchay.swift.gui.dnd.JTransferableTree;
 import net.souchay.swift.net.DefaultSwiftConnectionResult;
 import net.souchay.swift.net.FsConnection;
+import net.souchay.swift.net.FsConnection.DownloadStatus;
 import net.souchay.swift.net.FsConnection.NoNeedToDownloadException;
 import net.souchay.swift.net.FsConnection.OnFileDownloaded;
 import net.souchay.swift.net.SwiftConfiguration;
@@ -658,9 +659,9 @@ public class SwiftMain {
 
                                             @Override
                                             public void onDownload(File f, String container, String path,
-                                                    boolean success) {
-                                                if (success && f.exists() && f.canRead()
-                                                    && Desktop.isDesktopSupported()) {
+                                                    DownloadStatus success) {
+                                                if (!(DownloadStatus.ERROR.equals(success)) && f.exists()
+                                                    && f.canRead() && Desktop.isDesktopSupported()) {
                                                     try {
                                                         Desktop.getDesktop().open(f);
                                                     } catch (Exception e1) {

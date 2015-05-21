@@ -16,6 +16,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import net.souchay.swift.gui.table.ProgressMonitorResult;
 import net.souchay.swift.gui.table.ProgressMonitorTableModel;
+import net.souchay.swift.net.FsConnection.DownloadStatus;
 import net.souchay.swift.net.FsConnection.NoNeedToDownloadException;
 import net.souchay.swift.net.FsConnection.OnFileDownloaded;
 import net.souchay.utilities.Application;
@@ -100,7 +101,7 @@ public class DefaultSwiftConnectionResult implements SwiftConnectionResultHandle
         BufferedOutputStream outFile = null;
         BufferedInputStream in = null;
         File f = null;
-        boolean success = true;
+        DownloadStatus success = DownloadStatus.SUCESS;
         try {
             f = onDownload.onStartDownload(container, path, len, connection.getLastModified(), eTag);
             outFile = new BufferedOutputStream(new FileOutputStream(f));
@@ -117,10 +118,10 @@ public class DefaultSwiftConnectionResult implements SwiftConnectionResultHandle
             }
         } catch (NoNeedToDownloadException err) {
             // Silent
-            success = true;
+            success = DownloadStatus.SKIPPED;
             f = err.getFile();
         } catch (IOException err) {
-            success = false;
+            success = DownloadStatus.ERROR;
             err.printStackTrace();
             if (f != null && f.exists())
                 f.deleteOnExit();

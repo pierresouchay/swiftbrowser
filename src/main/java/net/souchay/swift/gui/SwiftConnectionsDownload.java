@@ -29,6 +29,7 @@ import net.souchay.swift.gui.ContainerIFace.FileIFace;
 import net.souchay.swift.gui.FileImport.FileOrURLListener;
 import net.souchay.swift.gui.table.HeaderRowRenderer;
 import net.souchay.swift.net.FsConnection;
+import net.souchay.swift.net.FsConnection.DownloadStatus;
 import net.souchay.swift.net.FsConnection.NoNeedToDownloadException;
 import net.souchay.swift.net.HttpDateParser;
 import net.souchay.swift.net.SwiftConnectionResultHandler;
@@ -139,11 +140,19 @@ public class SwiftConnectionsDownload implements FileOrURLListener {
                                  }
 
                                  @Override
-                                 public void onDownload(File f, String container, String path, boolean success) {
-                                     if (success)
-                                         toSaveAs.setLastModified(virtualFile.getLastModified());
-                                     else
-                                         toSaveAs.delete();
+                                 public void onDownload(File f, String container, String path, DownloadStatus success) {
+                                     switch (success) {
+                                         case SUCESS:
+                                             toSaveAs.setLastModified(virtualFile.getLastModified());
+                                             break;
+                                         case ERROR:
+                                             toSaveAs.delete();
+                                             break;
+                                         case SKIPPED:
+                                             // NO OP
+                                         default:
+                                             break;
+                                     }
                                  }
                              },
                              -1);
